@@ -1,16 +1,22 @@
-from machine import Pin, I2C
-from ssd1306 import SSD1306_I2C
 import utime
+from machine import Pin, I2C
+
+from ssd1306 import SSD1306_I2C
 import math
 #LoRa Lib
 from sx1262 import SX1262
 
+def blink():
+    pin = Pin("LED", Pin.OUT)
+    pin.toggle()
+    utime.sleep(1)
+    pin.toggle()
 
 TRANSISTOR_PIN = 16
 transistor = Pin(TRANSISTOR_PIN, Pin.OUT)
-
 transistor.high()
 
+blink()
 #Settings/constants for OLED display:
 CHAR_PER_LINE = 16 #Old was 21, should change font back later
 LINES = 6
@@ -20,7 +26,7 @@ history:list[str] = []
 MSG_Draft:str = "Me: How long will that take?"
 #Scroll stores the line that is being viewed (aka the line that is at the top)
 scroll = 0
-
+blink()
 # Define the screen dimensions
 SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 64
@@ -34,7 +40,7 @@ i2c = I2C(0, scl=Pin(OLED_SCL), sda=Pin(OLED_SDA), freq=400000)
 
 # Create an SSD1306 display object
 display = SSD1306_I2C(SCREEN_WIDTH, SCREEN_HEIGHT, i2c, addr=0x3c)
-
+blink()
 #
 #   UTILITY FOR PRINTING TO DISPLAY
 #
@@ -116,7 +122,7 @@ sx.begin(freq=902.0, bw=500.0, sf=12, cr=8, syncWord=0x12,
 sx.setBlockingCallback(False, cb)
 
 def sendMSG(msg, recp):
-    sx.send(bytes(recp + "|" + msg))
+    sx.send(bytes(recp + "|" + msg, 'utf-8'))
 
 #
 #   General combinding everything together func's
@@ -141,9 +147,10 @@ def loop():
     global scroll  # Declare scroll as global
     while True:
         utime.sleep(1)
+        pin.toggle()
         # scroll += 1
         # updateDisplay()
-        sendMSG("Hi!",name)
+        sendMSG("Hi!", name)
 # Run the loop function indefinitely
 
 history.append("Me: Hi there!")
