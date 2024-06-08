@@ -1,4 +1,4 @@
-from sx1262 import SX1262
+from lib.sx1262 import SX1262
 # from main import name # needs to be implemented
 import time
 
@@ -26,3 +26,6 @@ sx.setBlockingCallback(False, cb)
 
 def sendMSG(msg, recp):
     sx.send(bytes(recp + "|" + msg))
+
+def recivedMSG(MSG):
+    print(MSG)
