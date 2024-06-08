@@ -1,6 +1,8 @@
 from sx1262 import SX1262
-from main import name # needs to be implemented
+# from main import name # needs to be implemented
 import time
+
+name = "D1"
 
 def cb(events):
     if events & SX1262.RX_DONE:
