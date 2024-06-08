@@ -1,4 +1,4 @@
-from _sx126x import *
+from lib._sx126x import *
 
 from sys import implementation
 
