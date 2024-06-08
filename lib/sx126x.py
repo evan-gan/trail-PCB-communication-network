@@ -36,7 +36,6 @@ if implementation.name == 'circuitpython':
         return diff
 
 class SX126X:
-
     def __init__(self, spi_bus, clk, mosi, miso, cs, irq, rst, gpio):
         self._irq = irq
         if implementation.name == 'micropython':

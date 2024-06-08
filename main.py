@@ -1,9 +1,9 @@
 from machine import Pin, I2C
-from lib.ssd1306 import SSD1306_I2C
+from ssd1306 import SSD1306_I2C
 import utime
 import math
 #LoRa Lib
-from lib.sx1262 import SX1262
+from sx1262 import SX1262
 
 
 TRANSISTOR_PIN = 16
