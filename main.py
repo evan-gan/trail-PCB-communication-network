@@ -8,15 +8,18 @@ from sx1262 import SX1262
 
 
 #The all important name!
-myname = "Board 2"
-sendname = "Board 1"
-
-
-pin = Pin("LED", Pin.OUT)
+myname = "Board 1"
+sendname = "Board 2"
 
 TRANSISTOR_PIN = 16
 transistor = Pin(TRANSISTOR_PIN, Pin.OUT)
 transistor.high()
+
+# for pin in COL_PINS:
+#     Pin(pin, Pin.IN, Pin.PULL_UP)
+
+# for pin in ROW_PINS:
+#     Pin(pin, Pin.IN, Pin.PULL_UP)
 
 #Settings/constants for OLED display:
 CHAR_PER_LINE = 16 #Old was 21, should change font back later
@@ -49,8 +52,15 @@ display = SSD1306_I2C(SCREEN_WIDTH, SCREEN_HEIGHT, i2c, addr=0x3c)
 # Shift key send example message
 SHIFT_PIN = Pin(28, Pin.IN, Pin.PULL_UP)
 
+COL_GS_PIN = Pin(7, Pin.IN)
+ROW_GS_PIN = Pin(9, Pin.IN, Pin.PULL_UP)
+
+COL_PINS = [10, 27, 6]
+ROW_PINS = [14, 13, 21]
+
 # Variable to store the last button press time
 last_press_time = 0
+last_press_time_d = 0
 
 def shift_pressed(pin):
     global last_press_time
@@ -60,8 +70,23 @@ def shift_pressed(pin):
         sendMSG("hello world!", myname, sendname)
         last_press_time = current_time
 
+led_pin = Pin("LED", Pin.OUT)
+
+def keypor(pin):
+    global last_press_time_d
+    current_time = utime.ticks_ms()
+    # Check if the debounce time (200 ms) has passed
+    if utime.ticks_diff(current_time, last_press_time_d) > 200:
+        print("Key pressed", current_time)
+        led_pin.toggle()
+        last_press_time_d = current_time
+
 # Set up an interrupt to detect button presses
 SHIFT_PIN.irq(trigger=Pin.IRQ_FALLING, handler=shift_pressed)
+
+# COL_GS_PIN.irq(trigger=Pin.IRQ_FALLING, handler=keypor)
+
+Pin(COL_PINS[0], Pin.IN, Pin.PULL_UP).irq(trigger=Pin.IRQ_FALLING, handler=keypor)
 
 #
 #   UTILITY FOR PRINTING TO DISPLAY
@@ -158,12 +183,21 @@ def scan_i2c():
     else:
         print("No I2C devices found")
 
+
 # Main loop function
 def loop():
     global scroll  # Declare scroll as global
     while True:
         utime.sleep(0.1)
-        pin.toggle()
+        # led_pin.toggle()
+
+        # print(Pin(ROW_GS_PIN, Pin.IN, Pin.PULL_UP).value(), Pin(ROW_PINS[0], Pin.IN, Pin.PULL_UP).value(), Pin(ROW_PINS[1], Pin.IN, Pin.PULL_UP).value(), Pin(ROW_PINS[2], Pin.IN, Pin.PULL_UP).value())
+
+        # for row in range(3):
+        #     for col in range(3):
+        #         if Pin(COL_PINS[col]).value():
+        #             print(f"Row {row} Col {col} pressed")
+
         # scroll += 1
         # updateDisplay()
         # sendMSG("Hi!", name)
