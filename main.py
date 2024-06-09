@@ -6,27 +6,30 @@ import math
 #LoRa Lib
 from sx1262 import SX1262
 
-def blink():
-    pin = Pin("LED", Pin.OUT)
-    pin.toggle()
-    utime.sleep(1)
-    pin.toggle()
+pin = Pin("LED", Pin.OUT)
+
+
 
 TRANSISTOR_PIN = 16
 transistor = Pin(TRANSISTOR_PIN, Pin.OUT)
 transistor.high()
 
-blink()
 #Settings/constants for OLED display:
 CHAR_PER_LINE = 16 #Old was 21, should change font back later
 LINES = 6
+
+# idk why but removing this delay breaks the code
+utime.sleep(0.5)
+
+
 
 #Where the messages & draft are stored
 history:list[str] = []
 MSG_Draft:str = "Me: How long will that take?"
 #Scroll stores the line that is being viewed (aka the line that is at the top)
 scroll = 0
-blink()
+
+
 # Define the screen dimensions
 SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 64
@@ -40,7 +43,6 @@ i2c = I2C(0, scl=Pin(OLED_SCL), sda=Pin(OLED_SDA), freq=400000)
 
 # Create an SSD1306 display object
 display = SSD1306_I2C(SCREEN_WIDTH, SCREEN_HEIGHT, i2c, addr=0x3c)
-blink()
 #
 #   UTILITY FOR PRINTING TO DISPLAY
 #
