@@ -14,7 +14,7 @@ class Display:
     def __init__(self, historyManager):
         utime.sleep(0.5)
         self.historyManager:HistoryManager = historyManager
-        #Display initilisation
+        #Display init
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
         self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c)
 
