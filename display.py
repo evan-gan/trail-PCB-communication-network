@@ -13,8 +13,7 @@ class Display:
 
     def __init__(self, historyManager):
         utime.sleep(0.5)
-        self.historyManager = historyManager
-        
+        self.historyManager:HistoryManager = historyManager
         #Display initilisation
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
         self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c)
@@ -35,12 +34,14 @@ class Display:
 
     #Gets all messages (including the draft) as a format that could be printed
     def getLatestMessagesAsLines(self) -> list[str]:
-        lineBroken:list[str] = self.splitMessageIntoLines(self.historyManager.getHistory())
-        for text in reversed(self.historyManager.history):
+        lineBroken:list[str] = self.splitMessageIntoLines(self.historyManager.getMSG_Draft())
+        for text in reversed(self.historyManager.getHistory()):
             lineBroken += self.splitMessageIntoLines(text)
         return lineBroken
 
-    #Display interactions:
+#
+#   Display interactions:
+#
     def writeToLine(self,line, text):
         LINE_OFFSET = 10
         self.display.text(text, 0, LINE_OFFSET*line)

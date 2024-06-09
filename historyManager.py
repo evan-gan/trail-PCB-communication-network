@@ -14,4 +14,5 @@ class HistoryManager:
     
     def setMSG_Draft(self, newDraft):
         self.MSG_Draft = newDraft
+    
     #TODO: Implement store/restore from flash mem
