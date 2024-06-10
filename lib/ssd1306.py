@@ -1,3 +1,5 @@
+# Ported from Adafruit CircuitPython ssd1306 display module with minor modifications to work with MicroPython :D
+
 # SPDX-FileCopyrightText: 2017 Michael McWethy for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
@@ -292,12 +294,12 @@ class SSD1306_I2C(_SSD1306):
                 self.pagebuffer[1:] = self.buffer[
                     1 + self.width * page: 1 + self.width * (page + 1)
                 ]
-                self.i2c_device.writeto(self.addr, self.pagebuffer)
+                self.i2c_device.writevto(self.addr, self.pagebuffer)
                 # with self.i2c_device:
                 #     self.i2c_device.write(self.pagebuffer)
         else:
             # TODO: Fix this
-            self.i2c_device.writevto(self.addr, self.buffer)
+            self.i2c_device.writevto(self.addr, [self.buffer])
             # with self.i2c_device:
             #     self.i2c_device.write(self.buffer)
 

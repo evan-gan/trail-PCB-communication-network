@@ -31,7 +31,7 @@ m_keyboard = keyboard.Keyboard(lambda x: m_radio.sendMSG(x, myname, sendname))
 
 
 def calculate_text_position(text, x_center, y_center):
-    char_width = 8
+    char_width = 5
     char_height = 8
     text_width = len(text) * char_width
     text_height = char_height  # Assuming single-line text.
@@ -56,16 +56,16 @@ tlxx, tlyy = calculate_text_position("Welcome", 0.5, 0.5)
 while True:
     # utime.sleep(1/60)
     print("Looping", utime.ticks_ms())
-    display.text("Welcome!", tlx, tly, 1, size=2)
-    display.show()
-    utime.sleep(1)
-    display.fill(0)
-    display.text("Welcome", tlxx, tlyy, 1, size=2)
+    Pin("LED", Pin.OUT).toggle()
+    display.text("Welcome!", tlx, tly, 1, size=1)
     display.show()
     utime.sleep(1)
     display.fill(0)
 
-    Pin("LED", Pin.OUT).toggle()
+    display.text("Welcome", tlxx, tlyy, 1, size=1)
+    display.show()
+    utime.sleep(1)
+    display.fill(0)
 
 
 # # Main loop function

@@ -496,7 +496,7 @@ class FrameBuffer:
             y += dt_y
 
     # pylint: disable=too-many-arguments
-    def text(self, string, x, y, color, *, font_name="font5x8.bin", size=0):
+    def text(self, string, x, y, color, *, font_name="font5x8.bin", size=1):
         """Place text on the screen in variables sizes. Breaks on \n to next line.
 
         Does not break on line going off screen.
@@ -653,9 +653,11 @@ class BitmapFont:
         self.deinit()
 
     def draw_char(
+        # TODO: Change size default back to 0 after making sure max() works
         self, char, x, y, framebuffer, color, size=1
     ):  # pylint: disable=too-many-arguments
         """Draw one character at position (x,y) to a framebuffer in a given color"""
+        # TODO: Inspect why max isnt working like it should
         size = max(size, 1)
         # Don't draw the character if it will be clipped off the visible area.
         # if x < -self.font_width or x >= framebuffer.width or \
