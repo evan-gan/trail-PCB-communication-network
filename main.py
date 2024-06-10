@@ -1,26 +1,31 @@
-from machine import Pin, I2C
-import utime, math
-import radio, display, keyboard, historyManager
+from machine import Pin, I2C, unique_id
+import utime
+import math
 
-TRANSISTOR_PIN = 16
-transistor = Pin(TRANSISTOR_PIN, Pin.OUT)
-transistor.high()
+import radio
+import display
+import keyboard
+import historyManager
+
+# Turn on the OLED display
+Pin(16, Pin.OUT).high()
+# Waits for the power to stabilize before initializing the display
 utime.sleep(0.5)
+
 
 def receivedMSG(historyManager, MSG):
     global history
     m_historyManager.addMSG(MSG)
     m_display.updateDisplay()
 
+
 myname = "Board 1"
 sendname = "Board 2"
 
-m_radio = radio.Radio(lambda x : receivedMSG(m_historyManager, x))
+m_radio = radio.Radio(lambda x: receivedMSG(m_historyManager, x))
 m_historyManager = historyManager.HistoryManager()
 m_display = display.Display(m_historyManager)
-m_keyboard = keyboard.Keyboard(lambda x : m_radio.sendMSG(x, myname, sendname))
-
-
+m_keyboard = keyboard.Keyboard(lambda x: m_radio.sendMSG(x, myname, sendname))
 
 
 # # Main loop function

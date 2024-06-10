@@ -1,6 +1,6 @@
 class HistoryManager:
-    history:list[str] = []
-    MSG_Draft:str = "Me: How long will that take?"
+    history: list[str] = []
+    MSG_Draft: str = "Me: How long will that take?"
     scroll = 0
 
     def addMSG(self, MSG):
@@ -11,8 +11,8 @@ class HistoryManager:
 
     def getMSG_Draft(self):
         return self.MSG_Draft
-    
+
     def setMSG_Draft(self, newDraft):
         self.MSG_Draft = newDraft
-    
-    #TODO: Implement store/restore from flash mem
+
+    # TODO: Implement store/restore from flash mem
