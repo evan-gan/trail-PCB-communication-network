@@ -501,6 +501,8 @@ class FrameBuffer:
 
         Does not break on line going off screen.
         """
+        size = max(size, 1)
+
         # determine our effective width/height, taking rotation into account
         frame_width = self.width
         frame_height = self.height
@@ -653,12 +655,10 @@ class BitmapFont:
         self.deinit()
 
     def draw_char(
-        # TODO: Change size default back to 0 after making sure max() works
-        self, char, x, y, framebuffer, color, size=1
+        self, char, x, y, framebuffer, color, size
     ):  # pylint: disable=too-many-arguments
         """Draw one character at position (x,y) to a framebuffer in a given color"""
-        # TODO: Inspect why max isnt working like it should
-        size = max(size, 1)
+        # size = max(size, 1)
         # Don't draw the character if it will be clipped off the visible area.
         # if x < -self.font_width or x >= framebuffer.width or \
         #   y < -self.font_height or y >= framebuffer.height:
