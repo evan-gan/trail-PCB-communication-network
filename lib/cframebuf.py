@@ -1,3 +1,5 @@
+# Ported from Adafruit CircuitPython framebuf module with minor modifications to work with MicroPython :D
+
 # SPDX-FileCopyrightText: <text> 2018 Kattni Rembor, Melissa LeBlanc-Williams
 # and Tony DiCola, for Adafruit Industries.
 # Original file created by Damien P. George </text>
@@ -494,7 +496,7 @@ class FrameBuffer:
             y += dt_y
 
     # pylint: disable=too-many-arguments
-    def text(self, string, x, y, color, size=0, *, font_name="font5x8.bin"):
+    def text(self, string, x, y, color, *, font_name="font5x8.bin", size=0):
         """Place text on the screen in variables sizes. Breaks on \n to next line.
 
         Does not break on line going off screen.
@@ -595,6 +597,15 @@ class BitmapFont:
             print(f"Error loading font data: {e}")
             raise
 
+    def read_font_data(self, offset, length):
+        # Read data from the memory view starting at offset and for length bytes
+        return self._font[offset:offset+length]
+
+    def get_character_data(self, char):
+        # Get the data for a specific character
+        index = 2 + (ord(char) * self.font_width)
+        return self.read_font_data(index, self.font_width)
+
     # def __init__(self, font_name="font5x8.bin"):
     #     # Specify the drawing area width and height, and the pixel function to
     #     # call when drawing pixels (should take an x and y param at least).
@@ -629,7 +640,8 @@ class BitmapFont:
 
     def deinit(self):
         """Close the font file as cleanup."""
-        self._font.close()
+        # self._font.close()
+        pass
 
     def __enter__(self):
         """Initialize/open the font file"""
@@ -652,9 +664,10 @@ class BitmapFont:
         # Go through each column of the character.
         for char_x in range(self.font_width):
             # Grab the byte for the current column of font data.
-            self._font.seek(2 + (ord(char) * self.font_width) + char_x)
+            # self._font.seek(2 + (ord(char) * self.font_width) + char_x)
             try:
-                line = struct.unpack("B", self._font.read(1))[0]
+                line = struct.unpack("B", self.get_character_data(char)[
+                                     char_x:char_x+1])[0]
             except RuntimeError:
                 continue  # maybe character isnt there? go to next
             # Go through each row in the column byte.

@@ -297,7 +297,7 @@ class SSD1306_I2C(_SSD1306):
                 #     self.i2c_device.write(self.pagebuffer)
         else:
             # TODO: Fix this
-            self.i2c_device.writeto(self.addr, self.buffer)
+            self.i2c_device.writevto(self.addr, self.buffer)
             # with self.i2c_device:
             #     self.i2c_device.write(self.buffer)
 

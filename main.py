@@ -18,7 +18,7 @@ utime.sleep(0.5)
 def receivedMSG(historyManager, MSG):
     global history
     m_historyManager.addMSG(MSG)
-    m_display.updateDisplay()
+    # m_display.updateDisplay()
 
 
 myname = "Board 1"
@@ -43,7 +43,7 @@ def calculate_text_position(text, x_center, y_center):
 
 
 i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
-display = SSD1306_I2C(128, 64, i2c, page_addressing=True)
+display = SSD1306_I2C(128, 64, i2c, page_addressing=False)
 
 # tlx, tly = calculate_text_position("Welcome!", 0.5, 0.5)
 # m_display.display.text("Welcome!", tlx, tly)
@@ -56,16 +56,16 @@ tlxx, tlyy = calculate_text_position("Welcome", 0.5, 0.5)
 while True:
     # utime.sleep(1/60)
     print("Looping", utime.ticks_ms())
-    display.text("Welcome!dsqAWDAWDADWADWAWDAWDAWDDAW", tlx, tly, 1)
+    display.text("Welcome!", tlx, tly, 1, size=2)
     display.show()
     utime.sleep(1)
     display.fill(0)
-    display.text("Welcome", tlxx, tlyy, 1)
+    display.text("Welcome", tlxx, tlyy, 1, size=2)
     display.show()
     utime.sleep(1)
     display.fill(0)
 
-    # Pin("LED", Pin.OUT).toggle()
+    Pin("LED", Pin.OUT).toggle()
 
 
 # # Main loop function
