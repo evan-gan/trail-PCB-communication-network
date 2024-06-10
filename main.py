@@ -28,6 +28,41 @@ m_display = display.Display(m_historyManager)
 m_keyboard = keyboard.Keyboard(lambda x: m_radio.sendMSG(x, myname, sendname))
 
 
+def calculate_text_position(text, x_center, y_center):
+    char_width = 8
+    char_height = 8
+    text_width = len(text) * char_width
+    text_height = char_height  # Assuming single-line text.
+
+    top_left_x = int(x_center * 128 - text_width / 2)
+    top_left_y = int(y_center * 64 - text_height / 2)
+
+    return top_left_x, top_left_y
+
+
+# tlx, tly = calculate_text_position("Welcome!", 0.5, 0.5)
+# m_display.display.text("Welcome!", tlx, tly)
+# m_display.display.hline(0, 64, 128, 1)
+m_display.display.show()
+
+tlx, tly = calculate_text_position("Welcome!", 0.5, 0.5)
+tlxx, tlyy = calculate_text_position("Welcome", 0.5, 0.5)
+
+while True:
+    # utime.sleep(1/60)
+    print("Looping", utime.ticks_ms())
+    m_display.display.text("Welcome!", tlx, tly)
+    m_display.display.show()
+    utime.sleep(1)
+    m_display.display.fill(0)
+    m_display.display.text("Welcome", tlxx, tlyy)
+    m_display.display.show()
+    utime.sleep(1)
+    m_display.display.fill(0)
+
+    # Pin("LED", Pin.OUT).toggle()
+
+
 # # Main loop function
 # def loop():
 #     global scroll  # Declare scroll as global
