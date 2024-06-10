@@ -2,6 +2,8 @@ from machine import Pin, I2C, unique_id
 import utime
 import math
 
+from lib.ssd1306 import SSD1306_I2C
+
 import radio
 import display
 import keyboard
@@ -24,7 +26,7 @@ sendname = "Board 2"
 
 m_radio = radio.Radio(lambda x: receivedMSG(m_historyManager, x))
 m_historyManager = historyManager.HistoryManager()
-m_display = display.Display(m_historyManager)
+# m_display = display.Display(m_historyManager)
 m_keyboard = keyboard.Keyboard(lambda x: m_radio.sendMSG(x, myname, sendname))
 
 
@@ -40,10 +42,13 @@ def calculate_text_position(text, x_center, y_center):
     return top_left_x, top_left_y
 
 
+i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
+display = SSD1306_I2C(128, 64, i2c, page_addressing=True)
+
 # tlx, tly = calculate_text_position("Welcome!", 0.5, 0.5)
 # m_display.display.text("Welcome!", tlx, tly)
 # m_display.display.hline(0, 64, 128, 1)
-m_display.display.show()
+# m_display.display.show()
 
 tlx, tly = calculate_text_position("Welcome!", 0.5, 0.5)
 tlxx, tlyy = calculate_text_position("Welcome", 0.5, 0.5)
@@ -51,14 +56,14 @@ tlxx, tlyy = calculate_text_position("Welcome", 0.5, 0.5)
 while True:
     # utime.sleep(1/60)
     print("Looping", utime.ticks_ms())
-    m_display.display.text("Welcome!", tlx, tly)
-    m_display.display.show()
+    display.text("Welcome!dsqAWDAWDADWADWAWDAWDAWDDAW", tlx, tly, 1)
+    display.show()
     utime.sleep(1)
-    m_display.display.fill(0)
-    m_display.display.text("Welcome", tlxx, tlyy)
-    m_display.display.show()
+    display.fill(0)
+    display.text("Welcome", tlxx, tlyy, 1)
+    display.show()
     utime.sleep(1)
-    m_display.display.fill(0)
+    display.fill(0)
 
     # Pin("LED", Pin.OUT).toggle()
 

@@ -1,9 +1,7 @@
+from lib.ssd1306 import SSD1306_I2C
 from machine import Pin, I2C
 import utime
 import math
-
-from lib.ssd1306 import SSD1306_I2C
-
 import CONSTS
 from historyManager import HistoryManager
 
@@ -17,11 +15,11 @@ class Display:
     scroll = 0
 
     def __init__(self, historyManager):
-        # utime.sleep(0.5)
+        utime.sleep(0.5)
         self.historyManager: HistoryManager = historyManager
         # Display init
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
-        self.display = SSD1306_I2C(128, 64, self.i2c)
+        self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c)
 
     def linesForMessage(self, MSG):
         MESSAGE_LENGTH: int = len(MSG)
@@ -73,7 +71,6 @@ class Display:
     # Debugging help:
     def scan_i2c(self):
         devices = self.i2c.scan()
-
         if devices:
             print("I2C devices found:", [hex(device) for device in devices])
         else:
