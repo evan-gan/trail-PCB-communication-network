@@ -3,6 +3,7 @@ from lib.sx126x import SX126X
 
 _SX126X_PA_CONFIG_SX1262 = const(0x00)
 
+
 class SX1262(SX126X):
     TX_DONE = SX126X_IRQ_TX_DONE
     RX_DONE = SX126X_IRQ_RX_DONE
@@ -24,7 +25,8 @@ class SX1262(SX126X):
               power=14, currentLimit=60.0, preambleLength=8, implicit=False, implicitLen=0xFF,
               crcOn=True, txIq=False, rxIq=False, tcxoVoltage=1.6, useRegulatorLDO=False,
               blocking=True):
-        state = super().begin(bw, sf, cr, syncWord, currentLimit, preambleLength, tcxoVoltage, useRegulatorLDO, txIq, rxIq)
+        state = super().begin(bw, sf, cr, syncWord, currentLimit,
+                              preambleLength, tcxoVoltage, useRegulatorLDO, txIq, rxIq)
         ASSERT(state)
 
         if not implicit:
@@ -56,7 +58,8 @@ class SX1262(SX126X):
                  fixedPacketLength=False, packetLength=0xFF, preambleDetectorLength=SX126X_GFSK_PREAMBLE_DETECT_16,
                  tcxoVoltage=1.6, useRegulatorLDO=False,
                  blocking=True):
-        state = super().beginFSK(br, freqDev, rxBw, currentLimit, preambleLength, dataShaping, preambleDetectorLength, tcxoVoltage, useRegulatorLDO)
+        state = super().beginFSK(br, freqDev, rxBw, currentLimit, preambleLength,
+                                 dataShaping, preambleDetectorLength, tcxoVoltage, useRegulatorLDO)
         ASSERT(state)
 
         state = super().setSyncBits(syncWord, syncBitsLength)
@@ -191,9 +194,9 @@ class SX1262(SX126X):
 
     def _receive(self, len_=0, timeout_en=False, timeout_ms=0):
         state = ERR_NONE
-        
+
         length = len_
-        
+
         if len_ == 0:
             length = SX126X_MAX_PACKET_LENGTH
 
@@ -213,7 +216,7 @@ class SX1262(SX126X):
         else:
             return b'', state
 
-        return  bytes(data), state
+        return bytes(data), state
 
     def _transmit(self, data):
         if isinstance(data, bytes) or isinstance(data, bytearray):

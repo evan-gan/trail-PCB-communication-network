@@ -24,6 +24,8 @@ SET_VCOM_DESEL = const(0xDB)
 SET_CHARGE_PUMP = const(0x8D)
 
 # Subclassing FrameBuffer provides support to graphics primitives
+
+
 class SSD1306(framebuf.FrameBuffer):
     def __init__(self, width, height, external_vcc):
         self.width = width
@@ -55,7 +57,7 @@ class SSD1306(framebuf.FrameBuffer):
             SET_ENTIRE_ON,  # output follows RAM contents
             SET_NORM_INV,  # normal display
             SET_CHARGE_PUMP, 0x10 if self.external_vcc else 0x14,
-            SET_DISP | 0x01):  # display on
+                SET_DISP | 0x01):  # display on
             self.write_cmd(cmd)
         self.fill(0)
         self.show()
@@ -87,6 +89,7 @@ class SSD1306(framebuf.FrameBuffer):
         self.write_cmd(0)
         self.write_cmd(self.pages - 1)
         self.write_data(self.buffer)
+
 
 class SSD1306_I2C(SSD1306):
     def __init__(self, width, height, i2c, addr=0x3C, external_vcc=False):

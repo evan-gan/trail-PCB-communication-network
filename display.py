@@ -4,37 +4,43 @@ import utime
 import math
 import CONSTS
 from historyManager import HistoryManager
+
 #
 #   UTILITY FOR PRINTING TO DISPLAY
 #
+
+
 class Display:
-    #Scroll stores the line that is being viewed (aka the line that is at the top)
+    # Scroll stores the line that is being viewed (aka the line that is at the top)
     scroll = 0
 
     def __init__(self, historyManager):
         utime.sleep(0.5)
-        self.historyManager:HistoryManager = historyManager
-        #Display init
+        self.historyManager: HistoryManager = historyManager
+        # Display init
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
         self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c)
 
-    def linesForMessage(self,MSG):
-        MESSAGE_LENGTH:int = len(MSG)
+    def linesForMessage(self, MSG):
+        MESSAGE_LENGTH: int = len(MSG)
         # print(MSG_Draft)
         return math.ceil(MESSAGE_LENGTH/CONSTS.CHAR_PER_LINE)
 
-    #Splits a message into lines
-    def splitMessageIntoLines(self,MSG) -> list[str]:
+    # Splits a message into lines
+    def splitMessageIntoLines(self, MSG) -> list[str]:
         splitMSG = []
         linesInMSG = self.linesForMessage(MSG)
         for line in range(linesInMSG-1):
-            splitMSG.append(MSG[line*CONSTS.CHAR_PER_LINE:(line+1)*CONSTS.CHAR_PER_LINE]) #Gets the line's chunk
+            # Gets the line's chunk
+            splitMSG.append(
+                MSG[line*CONSTS.CHAR_PER_LINE:(line+1)*CONSTS.CHAR_PER_LINE])
         splitMSG.append(MSG[(linesInMSG-1)*CONSTS.CHAR_PER_LINE:])
         return splitMSG
 
-    #Gets all messages (including the draft) as a format that could be printed
+    # Gets all messages (including the draft) as a format that could be printed
     def getLatestMessagesAsLines(self) -> list[str]:
-        lineBroken:list[str] = self.splitMessageIntoLines(self.historyManager.getMSG_Draft())
+        lineBroken: list[str] = self.splitMessageIntoLines(
+            self.historyManager.getMSG_Draft())
         for text in reversed(self.historyManager.getHistory()):
             lineBroken += self.splitMessageIntoLines(text)
         return lineBroken
@@ -42,7 +48,7 @@ class Display:
 #
 #   Display interactions:
 #
-    def writeToLine(self,line, text):
+    def writeToLine(self, line, text):
         LINE_OFFSET = 10
         self.display.text(text, 0, LINE_OFFSET*line)
 
@@ -62,7 +68,7 @@ class Display:
             index += 1
         self.showDisplay()
 
-    #Debugging help:
+    # Debugging help:
     def scan_i2c(self):
         devices = self.i2c.scan()
         if devices:
