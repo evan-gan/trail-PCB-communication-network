@@ -588,7 +588,7 @@ class BitmapFont:
         try:
             # TODO: Add support for other font sizes
 
-            self._font = fonts()
+            self._font = fonts(self.font_name)
 
             self.font_width, self.font_height = struct.unpack(
                 "BB", self._font[:2])
@@ -596,7 +596,7 @@ class BitmapFont:
             if 2 + 256 * self.font_width != len(self._font):
                 raise RuntimeError("Invalid font file: " + font_name)
         except Exception as e:
-            print(f"Error loading font data: {e}")
+            print(f"Error loading font data for font {font_name}: {e}")
             raise
 
     def read_font_data(self, offset, length):
