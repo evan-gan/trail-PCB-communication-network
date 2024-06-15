@@ -47,11 +47,11 @@ class vCanvas:
 
     def update(self, key, data):
         self.data[key] = data
-        self.updateFunc(self.data)
+        # self.updateFunc(self.data)
 
     def thread_function(self, name, delay):
         while True:
-            utime.sleep(1/60)
+            utime.sleep(1/120)
             self.updateFunc(self.data)
 
 

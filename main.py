@@ -85,7 +85,7 @@ labellll = TextLabel(m_vcanvas, {
 # tlx, tly = calculate_text_position("Welcome!", 0.5, 0.5)
 # tlxx, tlyy = calculate_text_position("Welcome", 0.5, 0.5)
 
-# _thread.start_new_thread(m_vcanvas.thread_function, ("Thread-1", 1))
+_thread.start_new_thread(m_vcanvas.thread_function, ("Thread-1", 1))
 
 anogus = 1
 while True:
@@ -98,17 +98,23 @@ while True:
 
     if anogus == 0:
         labellll.text = "Welcome!"
+
         labellll.x = 1
-        labellll.ax = 1
         labellll.y = 1
+
+        labellll.ax = 1
         labellll.ay = 1
+
         anogus = 1
     else:
         labellll.text = "Welcome"
+
         labellll.x = 0.5
-        labellll.ax = 0.5
         labellll.y = 0.5
+
+        labellll.ax = 0.5
         labellll.ay = 0.5
+
         anogus = 0
 
     utime.sleep(1)
