@@ -2,7 +2,7 @@
 	"python.analysis.extraPaths": [
 		"/Users/iunstable0/.vscode/extensions/joedevivo.vscode-circuitpython-0.2.0-darwin-arm64/boards/0x239A/0x80F4",
 		"/Users/iunstable0/.vscode/extensions/joedevivo.vscode-circuitpython-0.2.0-darwin-arm64/stubs",
-		"/Users/iunstable0/Library/Application Support/Code/User/globalStorage/joedevivo.vscode-circuitpython/bundle/20240611/adafruit-circuitpython-bundle-py-20240611/lib",
+		"/Users/iunstable0/Library/Application Support/Code/User/globalStorage/joedevivo.vscode-circuitpython/bundle/20240615/adafruit-circuitpython-bundle-py-20240615/lib",
 		"~/.micropico-stubs/included"
 	],
 	"circuitpython.board.vid": "0x239A",

@@ -1,4 +1,6 @@
-import framebuf
+# Creates a virtual canvas that serves as an intermediary layer between the UI elements and the real display.
+
+import lib.cframebuf as framebuf
 import time
 
 
@@ -7,7 +9,7 @@ class vCanvas(framebuf.FrameBuffer):
         self.width = width
         self.height = height
         self.buffer = bytearray(self.width * self.height // 8)
-        super().__init__(self.buffer, self.width, self.height, framebuf.MONO_VLSB)
+        super().__init__(self.buffer, self.width, self.height, framebuf.MVLSB)
 
     def clear(self):
         self.fill(0)
