@@ -1,4 +1,5 @@
 from lib.sx1262 import SX1262
+import json
 
 
 class Radio:
@@ -21,12 +22,12 @@ class Radio:
             print('Received {}, {}'.format(msg, error))
             if error == "ERR_NONE":
                 # if msg[1] == myname: # this line will only work once changing name is implemented
-                self.receivedMSG(str(msg))
+                msgdict = json.loads(msg.decode("utf-8"))
+                self.receivedMSG(msgdict)
 
         elif events & SX1262.TX_DONE:
             print('done transmitting')
         pass
 
-    def sendMSG(self, msg, frm, to):  # frm = from
-        # sx.send(bytes(f"{frm}|{to}|{msg}", 'utf-8'))
-        self.sx.send(bytes(f"{frm}: {msg}", 'utf-8'))
+    def sendMSG(self, msg):  # frm = from
+        self.sx.send(json.dumps(msg).encode("utf-8"))

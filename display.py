@@ -1,80 +1,63 @@
 from machine import Pin, I2C
 import utime
 import math
-
 from lib.ssd1306 import SSD1306_I2C
-
-import CONSTS
-from historyManager import HistoryManager
-
-#
-#   UTILITY FOR PRINTING TO DISPLAY
-#
 
 
 class Display:
-    # Scroll stores the line that is being viewed (aka the line that is at the top)
-    scroll = 0
-
-    def __init__(self, historyManager):
-        # utime.sleep(0.5)
-        self.historyManager: HistoryManager = historyManager
-        # Display init
+    def __init__(self):
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
-        self.display = SSD1306_I2C(128, 64, self.i2c)
+        self.display = SSD1306_I2C(128, 64, self.i2c, page_addressing=False)
+        self.b = 1
 
-    def linesForMessage(self, MSG):
-        MESSAGE_LENGTH: int = len(MSG)
-        # print(MSG_Draft)
-        return math.ceil(MESSAGE_LENGTH/CONSTS.CHAR_PER_LINE)
+    def calculate_text_position(self, text, estate, position):
+        char_width = 5
+        char_height = 8
+        text_width = len(text) * char_width
+        text_height = char_height  # Assuming single-line text.
 
-    # Splits a message into lines
-    def splitMessageIntoLines(self, MSG) -> list[str]:
-        splitMSG = []
-        linesInMSG = self.linesForMessage(MSG)
-        for line in range(linesInMSG-1):
-            # Gets the line's chunk
-            splitMSG.append(
-                MSG[line*CONSTS.CHAR_PER_LINE:(line+1)*CONSTS.CHAR_PER_LINE])
-        splitMSG.append(MSG[(linesInMSG-1)*CONSTS.CHAR_PER_LINE:])
-        return splitMSG
+        x, y, ax, ay = position["x"], position["y"], position["ax"], position["ay"]
 
-    # Gets all messages (including the draft) as a format that could be printed
-    def getLatestMessagesAsLines(self) -> list[str]:
-        lineBroken: list[str] = self.splitMessageIntoLines(
-            self.historyManager.getMSG_Draft())
-        for text in reversed(self.historyManager.getHistory()):
-            lineBroken += self.splitMessageIntoLines(text)
-        return lineBroken
+        if position["type"] == "scale":
+            ref_x = x * estate[0]
+            ref_y = y * estate[1]
+        else:
+            ref_x = x
+            ref_y = y
 
-#
-#   Display interactions:
-#
-    def writeToLine(self, line, text):
-        LINE_OFFSET = 10
-        self.display.text(text, 0, LINE_OFFSET*line)
+        # top_left_x = int(ref_x - text_width / 2)
+        top_left_x = int(ref_x - (ax * text_width))
+        top_left_y = int(ref_y - (ay * text_height))
 
-    def clearDisplay(self):
+        # top_left_x = int(anchor[0] * estate[0] - text_width / 2)
+        # top_left_y = int(anchor[1] * estate[1] - text_height / 2)
+
+        return top_left_x, top_left_y
+
+    def update(self, data):
+        print(data)
+
         self.display.fill(0)
 
-    def showDisplay(self):
+        for id, prop in data.items():
+            # print(elem, prop)
+            if prop["className"] == "TextLabel":
+                # print("d")
+                text = prop["text"]
+                position = prop["position"]
+
+                x, y = self.calculate_text_position(text, [128, 64], position)
+
+                self.display.text(text, x,
+                                  y, 1, size=prop["textSize"])
+
         self.display.show()
 
-    def updateDisplay(self):
-        self.clearDisplay()
-        stuffToDisplay = self.getLatestMessagesAsLines()
-        length = len(stuffToDisplay)
-        index = 0
-        while ((index+self.scroll) < length and index < self.scroll+CONSTS.LINES):
-            self.writeToLine(index, stuffToDisplay[index+self.scroll])
-            index += 1
-        self.showDisplay()
-
-    # Debugging help:
-    def scan_i2c(self):
-        devices = self.i2c.scan()
-
-        if devices:
-            print("I2C devices found:", [hex(device) for device in devices])
-        else:
-            print("No I2C devices found")
+    # def test(self):
+    #     # print("TEST")
+    #     if self.b == 1:
+    #         self.b = 0
+    #         self.update(l.idk)
+    #     else:
+    #         self.b = 1
+    #         self.update(l.lll)

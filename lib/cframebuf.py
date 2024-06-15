@@ -496,7 +496,7 @@ class FrameBuffer:
             y += dt_y
 
     # pylint: disable=too-many-arguments
-    def text(self, string, x, y, color, *, font_name="font5x8.bin", size=1):
+    def text(self, string, x, y, color, *, font_name="font5x8", size=1):
         """Place text on the screen in variables sizes. Breaks on \n to next line.
 
         Does not break on line going off screen.
