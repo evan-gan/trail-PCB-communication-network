@@ -10,11 +10,11 @@ class Display:
         self.display = SSD1306_I2C(128, 64, self.i2c, page_addressing=False)
         self.b = 1
 
-    def calculate_text_position(self, text, estate, position):
+    def calculate_text_position(self, text, estate, position, size):
         char_width = 5
         char_height = 8
-        text_width = len(text) * char_width
-        text_height = char_height  # Assuming single-line text.
+        text_width = len(text) * char_width * size
+        text_height = char_height * size  # Assuming single-line text.
 
         x, y, ax, ay = position["x"], position["y"], position["ax"], position["ay"]
 
@@ -34,8 +34,8 @@ class Display:
 
         return top_left_x, top_left_y
 
-    def update(self, data):
-        print(data)
+    def render(self, data):
+        # print(data)
 
         self.display.fill(0)
 
@@ -45,11 +45,16 @@ class Display:
                 # print("d")
                 text = prop["text"]
                 position = prop["position"]
+                size = prop["text_size"]
 
-                x, y = self.calculate_text_position(text, [128, 64], position)
+                x, y = self.calculate_text_position(
+                    text, [128, 64], position, size)
+
+                # offset to the left a bit cuz the display is weird
+                x = x - (2 * size)
 
                 self.display.text(text, x,
-                                  y, 1, size=prop["textSize"])
+                                  y, 1, size=prop["text_size"])
 
         self.display.show()
 

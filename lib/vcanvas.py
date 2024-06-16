@@ -1,58 +1,33 @@
 # Creates a virtual canvas that serves as an intermediary layer between the UI elements and the real display.
 
-import lib.cframebuf as framebuf
 import time
 import utime
+
+import uasyncio as asyncio
 # import _thread
 
+import lib.cframebuf as framebuf
 import lib.utils as utils
 
 
 class vCanvas:
-    def __init__(self, width, height, updateFunc):
+    def __init__(self, width, height, renderCb):
         self.width = width
         self.height = height
-        self.data = {}
-        self.updateFunc = updateFunc
+        self.renderCb = renderCb
 
-        # self.idk = {
-        #     "TextLabel": {
-        #         "position": {
-        #             "type": "scale",
-        #             "x": 0.5,
-        #             "y": 0.5,
-        #             "ax": 0.5,
-        #             "ay": 0.5
-        #         },
-        #         "text": "Welcome!",
-        #         "textSize": 1,
-        #     }
-        # }
-        # self.lll = {
-        #     "TextLabel": {
-        #         "position": {
-        #             "type": "offset",
-        #             "x": 64,
-        #             "y": 32,
-        #             "ax": 0.5,
-        #             "ay": 0.5
-        #         },
-        #         "text": "Welcome",
-        #         "textSize": 1,
-        #     }
-        # }
+        self.data = {}
 
     def remove(self, key):
         del self.data[key]
 
     def update(self, key, data):
         self.data[key] = data
-        # self.updateFunc(self.data)
 
-    def thread_function(self, name, delay):
+    async def render(self):
         while True:
-            utime.sleep(1/60)
-            self.updateFunc(self.data)
+            await asyncio.sleep(1/60)
+            self.renderCb(self.data)
 
 
 class TextLabel:
@@ -68,6 +43,10 @@ class TextLabel:
     @property
     def text(self):
         return self.data["text"]
+
+    @property
+    def text_size(self):
+        return self.data["text_size"]
 
     @property
     def x(self):
@@ -92,6 +71,11 @@ class TextLabel:
     @text.setter
     def text(self, value):
         self.data["text"] = value
+        self.container.update(self.key, self.data)
+
+    @text_size.setter
+    def text_size(self, value):
+        self.data["text_size"] = value
         self.container.update(self.key, self.data)
 
     @x.setter

@@ -1,21 +1,21 @@
 {
-	"python.analysis.extraPaths": [
-		"/Users/iunstable0/.vscode/extensions/joedevivo.vscode-circuitpython-0.2.0-darwin-arm64/boards/0x239A/0x80F4",
-		"/Users/iunstable0/.vscode/extensions/joedevivo.vscode-circuitpython-0.2.0-darwin-arm64/stubs",
-		"/Users/iunstable0/Library/Application Support/Code/User/globalStorage/joedevivo.vscode-circuitpython/bundle/20240615/adafruit-circuitpython-bundle-py-20240615/lib",
-		"~/.micropico-stubs/included"
-	],
-	"circuitpython.board.vid": "0x239A",
-	"circuitpython.board.pid": "0x80F4",
-	"python.languageServer": "Pylance",
-	"python.analysis.diagnosticSeverityOverrides": {
-		"reportMissingModuleSource": "none",
-		"reportShadowedImports": "none"
-	},
-	"circuitpython.board.version": null,
-	"python.linting.enabled": true,
-	"python.analysis.typeCheckingMode": "basic",
-	"micropico.syncFolder": "",
-	"micropico.openOnStart": true,
-	"python.analysis.typeshedPaths": ["~/.micropico-stubs/included"]
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingModuleSource": "none",
+        "reportShadowedImports": "none"
+    },
+    "python.analysis.extraPaths": [
+        "",
+        "/Users/iunstable0/.vscode/extensions/joedevivo.vscode-circuitpython-0.2.0-darwin-arm64/stubs",
+        "/Users/iunstable0/Library/Application Support/Code/User/globalStorage/joedevivo.vscode-circuitpython/bundle/20240615/adafruit-circuitpython-bundle-py-20240615/lib",
+        "~/.micropico-stubs/included"
+    ],
+    "circuitpython.board.version": null,
+    "python.linting.enabled": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "micropico.syncFolder": "",
+    "micropico.openOnStart": true,
+    "python.analysis.typeshedPaths": [
+        "~/.micropico-stubs/included"
+    ]
 }
