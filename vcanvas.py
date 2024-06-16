@@ -4,7 +4,6 @@
 # TODO: Fool-check the recursive container update logic cuz i kinda just wrote it without thinking too much
 # TODO: Add more UI components (Scrolling frame, buttons, etc)
 # TODO: Check the remove and update methods in vCanvas again cuz like the #2 todo i kinda rushed it
-# TODO: Add scale width & height
 
 import time
 import utime
