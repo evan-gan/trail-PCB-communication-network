@@ -5,8 +5,8 @@ import math
 import uasyncio
 
 from lib.ssd1306 import SSD1306_I2C
-from lib.vcanvas import vCanvas, TextLabel
 
+import vcanvas
 import radio
 from display import Display
 # import keyboard
@@ -120,21 +120,31 @@ utime.sleep(0.5)
 
 async def main():
     _display = Display()
-    _vcanvas = vCanvas(128, 64, lambda data: _display.render(data))
+    _vcanvas = vcanvas.vCanvas(128, 64, lambda data: _display.render(data))
 
     render_task = uasyncio.create_task(_vcanvas.render())
 
-    label = TextLabel(_vcanvas, {
-        "position": {
-            "type": "scale",
-            "x": 0.5,
-            "y": 0.5,
-            "ax": 0.5,
-            "ay": 0.5
-        },
-        "text": "Welcome!",
-        "text_size": 1,
-    })
+    frame = vcanvas.Frame(_vcanvas, width=124, height=60, background_color=1,
+                          ax=0.5, ay=0.5, position_type="scale", x=0.5, y=0.5)
+
+    label = vcanvas.TextLabel(frame, text="Welcome!", text_size=1,
+                              ax=0.5, ay=0.5, position_type="scale", x=0.5, y=0.5)
+
+    # frame = vcanvas.Frame(_vcanvas, {
+
+    # })
+
+    # label = vcanvas.TextLabel(_vcanvas, {
+    #     "position": {
+    #         "type": "scale",
+    #         "x": 0.5,
+    #         "y": 0.5,
+    #         "ax": 0.5,
+    #         "ay": 0.5
+    #     },
+    #     "text": "Welcome!",
+    #     "text_size": 1,
+    # })
 
     amogus = 1
 
@@ -146,10 +156,10 @@ async def main():
             Pin("LED", Pin.OUT).toggle()
 
             if amogus == 0:
-                label.text = "Welcome!"
+                # label.text = "Welcome!"
                 amogus = 1
             elif amogus == 1:
-                label.text = "Welcome"
+                # label.text = "Welcome"
                 amogus = 0
     finally:
         render_task.cancel()

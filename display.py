@@ -34,14 +34,30 @@ class Display:
 
         return top_left_x, top_left_y
 
+    def calculate_frame_position(self, estate, position, size):
+        x, y, ax, ay = position["x"], position["y"], position["ax"], position["ay"]
+        width, height = size
+
+        if position["type"] == "scale":
+            ref_x = x * estate[0]
+            ref_y = y * estate[1]
+        else:
+            ref_x = x
+            ref_y = y
+
+        top_left_x = int(ref_x - (ax * width))
+        top_left_y = int(ref_y - (ay * height))
+
+        return top_left_x, top_left_y
+
     def render(self, data):
         # print(data)
 
         self.display.fill(0)
 
-        for id, prop in data.items():
+        for key, prop in data.items():
             # print(elem, prop)
-            if prop["className"] == "TextLabel":
+            if prop["class_name"] == "TextLabel":
                 # print("d")
                 text = prop["text"]
                 position = prop["position"]
@@ -55,7 +71,18 @@ class Display:
 
                 self.display.text(text, x,
                                   y, 1, size=prop["text_size"])
+            elif prop["class_name"] == "Frame":
+                # print("Frame")
 
+                x, y = self.calculate_frame_position(
+                    [128, 64], prop["position"], [prop["width"], prop["height"]])
+
+                width, height = prop["width"], prop["height"]
+                color = prop["background_color"]
+
+                # print(x, y, width, height, color)
+
+                self.display.rect(x, y, width, height, color)
         self.display.show()
 
     # def test(self):
