@@ -4,6 +4,7 @@
 # TODO: Fool-check the recursive container update logic cuz i kinda just wrote it without thinking too much
 # TODO: Add more UI components (Scrolling frame, buttons, etc)
 # TODO: Check the remove and update methods in vCanvas again cuz like the #2 todo i kinda rushed it
+# TODO: Add scale width & height
 
 import time
 import utime
@@ -17,8 +18,9 @@ import lib.utils as utils
 
 class vCanvas:
     def __init__(self, width, height, renderCb):
-        self.width = width
-        self.height = height
+        self.display_width = width
+        self.display_height = height
+
         self.renderCb = renderCb
 
         self.data = {}
@@ -69,11 +71,11 @@ class PropertyDescriptor:
 class UIComponent:
     class_name = PropertyDescriptor("class_name", str, immutable=True)
 
-    x = PropertyDescriptor("x", float or int, default=0)
-    y = PropertyDescriptor("y", float or int, default=0)
+    x = PropertyDescriptor("x", (int, float), default=0)
+    y = PropertyDescriptor("y", (int, float), default=0)
 
-    ax = PropertyDescriptor("ax", float or int, default=0)
-    ay = PropertyDescriptor("ay", float or int, default=0)
+    ax = PropertyDescriptor("ax", (int, float), default=0)
+    ay = PropertyDescriptor("ay", (int, float), default=0)
 
     position_type = PropertyDescriptor(
         "position_type", str, default="offset")
@@ -96,6 +98,7 @@ class UIComponent:
 
     def update_container(self):
         data = {}
+
         # Collect all properties from UIComponent and its subclasses
         for cls in [UIComponent, self.__class__]:
             for key, descriptor in cls.__dict__.items():
@@ -111,6 +114,13 @@ class UIComponent:
             "type": data.pop("position_type"),
         }
 
+        if "width" in data and "height" in data:
+            data["size"] = {
+                "x": data.pop("width"),
+                "y": data.pop("height"),
+                "type": data.pop("size_type"),
+            }
+
         if self.children:
             data["children"] = self.children
 
@@ -118,13 +128,12 @@ class UIComponent:
 
 
 class Frame(UIComponent):
-    width = PropertyDescriptor("width", int, default=10)
-    height = PropertyDescriptor("height", int, default=10)
+    size_type = PropertyDescriptor("size_type", str, default="offset")
 
-    background_color = PropertyDescriptor("color", int, default=0)
+    width = PropertyDescriptor("width", (int, float), default=10)
+    height = PropertyDescriptor("height", (int, float), default=10)
 
-    border_size = PropertyDescriptor("border_size", int, default=0)
-    border_color = PropertyDescriptor("border_color", int, default=0)
+    fill = PropertyDescriptor("fill", bool, default=False)
 
     # def __init__(self, container, data):
     #     super().__init__(container, data, class_name="Frame")
@@ -132,7 +141,9 @@ class Frame(UIComponent):
 
 class TextLabel(UIComponent):
     text = PropertyDescriptor("text", str, default="")
+
     text_size = PropertyDescriptor("text_size", int, default=1)
+    text_color = PropertyDescriptor("text_color", int, default=1)
 
     # def __init__(self, container, data):
     #     super().__init__(container, data, class_name="TextLabel")
