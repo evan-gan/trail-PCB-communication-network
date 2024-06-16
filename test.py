@@ -124,28 +124,11 @@ async def main():
 
     render_task = uasyncio.create_task(_vcanvas.render())
 
-    frame = vcanvas.Frame(_vcanvas, width=124, height=60, background_color=1,
+    frame = vcanvas.Frame(_vcanvas, width=64, height=32, background_color=1,
                           ax=0.5, ay=0.5, position_type="scale", x=0.5, y=0.5)
 
     label = vcanvas.TextLabel(frame, text="Welcome!", text_size=1,
                               ax=0.5, ay=0.5, position_type="scale", x=0.5, y=0.5)
-
-    # frame = vcanvas.Frame(_vcanvas, {
-
-    # })
-
-    # label = vcanvas.TextLabel(_vcanvas, {
-    #     "position": {
-    #         "type": "scale",
-    #         "x": 0.5,
-    #         "y": 0.5,
-    #         "ax": 0.5,
-    #         "ay": 0.5
-    #     },
-    #     "text": "Welcome!",
-    #     "text_size": 1,
-    # })
-
     amogus = 1
 
     try:
@@ -156,10 +139,14 @@ async def main():
             Pin("LED", Pin.OUT).toggle()
 
             if amogus == 0:
-                # label.text = "Welcome!"
+                frame.x = 0.25
+                frame.y = 0.25
+                label.text = "Welcome!"
                 amogus = 1
             elif amogus == 1:
-                # label.text = "Welcome"
+                frame.x = 0.75
+                frame.y = 0.75
+                label.text = "Welcome"
                 amogus = 0
     finally:
         render_task.cancel()

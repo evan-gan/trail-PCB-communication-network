@@ -106,6 +106,9 @@ class UIComponent:
             "type": data.pop("position_type"),
         }
 
+        if self.children:
+            data["children"] = self.children
+
         self.container.update(self.key, data)
 
 
