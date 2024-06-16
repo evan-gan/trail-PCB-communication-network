@@ -51,7 +51,7 @@ class vCanvas:
 
     def thread_function(self, name, delay):
         while True:
-            utime.sleep(1/120)
+            utime.sleep(1/60)
             self.updateFunc(self.data)
 
 

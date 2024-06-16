@@ -107,7 +107,7 @@ while True:
 
         anogus = 1
     else:
-        labellll.text = "Welcome"
+        labellll.text = "Happy"
 
         labellll.x = 0.5
         labellll.y = 0.5
