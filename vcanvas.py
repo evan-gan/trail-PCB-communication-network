@@ -1,5 +1,10 @@
 # Creates a virtual canvas that serves as an intermediary layer between the UI elements and the real display.
 
+# TODO: Improve update logic in UIComponent so that it doesnt reconstruct the entire data object every time a property is updated (for efficiency)
+# TODO: Fool-check the recursive container update logic cuz i kinda just wrote it without thinking too much
+# TODO: Add more UI components (Scrolling frame, buttons, etc)
+# TODO: Check the remove and update methods in vCanvas again cuz like the #2 todo i kinda rushed it
+
 import time
 import utime
 
