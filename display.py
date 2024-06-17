@@ -93,8 +93,6 @@ class Display:
             self.display.text(text, x,
                               y, text_color, size=text_size)
         elif class_name == "Frame":
-            # print(parent_position, parent_size, "poopy")
-
             size = prop["size"]
             position = prop["position"]
 
@@ -104,18 +102,14 @@ class Display:
 
             fill = prop["fill"]
 
-            print(pos_x, pos_y, width, height)
             self.display.rect(pos_x,  pos_y, width, height, 1, fill=fill)
 
             if "children" in prop:
                 for child_key, child_prop in prop["children"].items():
-                    # print([width, height])
                     self.render_component(
                         child_prop, [width, height], [pos_x,  pos_y])
 
     def render(self, data):
-        # print(data)
-
         self.display.fill(0)
 
         for key, prop in data.items():
@@ -123,12 +117,3 @@ class Display:
                 prop, [self.display_width, self.display_height])
 
         self.display.show()
-
-    # def test(self):
-    #     # print("TEST")
-    #     if self.b == 1:
-    #         self.b = 0
-    #         self.update(l.idk)
-    #     else:
-    #         self.b = 1
-    #         self.update(l.lll)
