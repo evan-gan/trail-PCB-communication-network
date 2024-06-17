@@ -4,17 +4,25 @@ import os
 
 class DataStore:
     def __init__(self, db):
+        if not db:
+            raise ValueError("DB cannot be empty!")
+
+        if not db.endswith(".json"):
+            db += ".json"
+
         self.db = db
         self.data = {}
         self.load()
 
     def load(self):
-        if os.path.exists(self.db):
+        try:
             with open(self.db, 'r') as f:
                 try:
                     self.data = json.load(f)
                 except ValueError:
                     self.data = {}
+        except OSError:
+            self.data = {}
 
     def save(self):
         with open(self.db, 'w') as f:

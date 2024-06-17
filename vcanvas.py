@@ -76,6 +76,8 @@ class UIComponent:
     ax = PropertyDescriptor("ax", (int, float), default=0)
     ay = PropertyDescriptor("ay", (int, float), default=0)
 
+    visible = PropertyDescriptor("visible", bool, default=True)
+
     position_type = PropertyDescriptor(
         "position_type", str, default="offset")
 
