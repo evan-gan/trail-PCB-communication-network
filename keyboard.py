@@ -66,22 +66,40 @@ class Keyboard:
     }
 
     def __init__(self, sendMSG, appendToDraft, deleteLastCharOfDraft):
-        self.Col1 = Pin(6, Pin.IN)
-        self.Col2 = Pin(7, Pin.IN)
-        self.Col3 = Pin(8, Pin.IN)
-        self.Col4 = Pin(9, Pin.IN)
-        self.Col5 = Pin(13, Pin.IN)
-        self.Col6 = Pin(14, Pin.IN)
-        self.Col7 = Pin(5, Pin.IN)
-        self.Col8 = Pin(4, Pin.IN)
+        self.Col1 = Pin(6, Pin.IN, Pin.PULL_DOWN)
+        self.Col2 = Pin(7, Pin.IN, Pin.PULL_DOWN)
+        self.Col3 = Pin(8, Pin.IN, Pin.PULL_DOWN)
+        self.Col4 = Pin(9, Pin.IN, Pin.PULL_DOWN)
+        self.Col5 = Pin(13, Pin.IN, Pin.PULL_DOWN)
+        self.Col6 = Pin(14, Pin.IN, Pin.PULL_DOWN)
+        self.Col7 = Pin(5, Pin.IN, Pin.PULL_DOWN)
+        self.Col8 = Pin(4, Pin.IN, Pin.PULL_DOWN)
 
-        self.Row1 = Pin(27, Pin.IN)
-        self.Row2 = Pin(26, Pin.IN)
-        self.Row3 = Pin(22, Pin.IN)
-        self.Row4 = Pin(21, Pin.IN)
-        self.Row5 = Pin(19, Pin.IN)
-        self.Row6 = Pin(18, Pin.IN)
-        self.Row7 = Pin(17, Pin.IN)
+        self.Row1 = Pin(27, Pin.IN, Pin.PULL_DOWN)
+        self.Row2 = Pin(26, Pin.IN, Pin.PULL_DOWN)
+        self.Row3 = Pin(22, Pin.IN, Pin.PULL_DOWN)
+        self.Row4 = Pin(21, Pin.IN, Pin.PULL_DOWN)
+        self.Row5 = Pin(19, Pin.IN, Pin.PULL_DOWN)
+        self.Row6 = Pin(18, Pin.IN, Pin.PULL_DOWN)
+        self.Row7 = Pin(17, Pin.IN, Pin.PULL_DOWN)
+
+        # Set up the interrupts on the rising edge (button press) for each pin
+        self.Col1.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col2.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col3.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col4.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col5.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col6.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col7.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Col8.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+
+        self.Row1.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Row2.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Row3.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Row4.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Row5.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Row6.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        self.Row7.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
 
         self.SHIFT_PIN = Pin(28, Pin.IN, Pin.PULL_UP)
 
@@ -113,7 +131,7 @@ class Keyboard:
             return
 
         RowCol = self.getRowColPressed()
-
+        print(f"{RowCol} was pressed!")
         if self.KEYS.get(RowCol, "nil") != "nil":
             self.appendToDraft((self.KEYS.get(RowCol))[self.getShiftPressed()]) # type: ignore
         elif RowCol == '36':
