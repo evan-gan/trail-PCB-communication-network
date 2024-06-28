@@ -124,7 +124,7 @@ class Keyboard:
             return 0
 
     def handleKeyPress(self, pin):
-        print("Called!")
+        # print("Called!")
         current_time = utime.ticks_ms()
         # Check if the debounce time (200 ms) has passed, if it has not return
         if utime.ticks_diff(current_time, self.last_press_time) > CONSTS.DEBOUNCE_TIME:
@@ -133,7 +133,7 @@ class Keyboard:
             return
 
         RowCol = self.getRowColPressed()
-        print(f"{RowCol} was pressed!")
+        # print(f"{RowCol} was pressed!")
         if self.KEYS.get(RowCol, "nil") != "nil":
             self.appendToDraft((self.KEYS.get(RowCol))[self.getShiftPressed()]) # type: ignore
         elif RowCol == '36':
@@ -183,4 +183,4 @@ keyboard = Keyboard(dummyFunc,dummyFunc,dummyFunc)
 
 while True:
     utime.sleep(1)
-    print("Running...")
+    # print("Running...")
