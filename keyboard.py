@@ -3,6 +3,7 @@ import utime
 import CONSTS
 
 
+
 class Keyboard:
     # Format is ROWCOL : [key value, key value if shifted]
     KEYS = {
@@ -122,7 +123,8 @@ class Keyboard:
         else:
             return 0
 
-    def handleKeyPress(self):
+    def handleKeyPress(self, pin):
+        print("Called!")
         current_time = utime.ticks_ms()
         # Check if the debounce time (200 ms) has passed, if it has not return
         if utime.ticks_diff(current_time, self.last_press_time) > CONSTS.DEBOUNCE_TIME:
@@ -140,7 +142,7 @@ class Keyboard:
             self.deleteLastCharOfDraft()
 
     def getRowColPressed(self):
-        return str(self.getRowColPressed()) + str(self.getColPressed())
+        return str(self.getRowPressed()) + str(self.getColPressed())
 
     def getColPressed(self):
         if self.Col1.value() == 1:
@@ -175,3 +177,10 @@ class Keyboard:
             return 6
         elif self.Row7.value() == 1:
             return 7
+def dummyFunc(input):
+    print(input)
+keyboard = Keyboard(dummyFunc,dummyFunc,dummyFunc)
+
+while True:
+    utime.sleep(1)
+    print("Running...")
