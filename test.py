@@ -8,14 +8,15 @@ import binascii
 import datastore
 import vcanvas
 import display
-
-# Turn on the OLED display
-Pin(16, Pin.OUT).high()
-# Waits for the power to stabilize before initializing the display
-utime.sleep(0.5)
+import keyboard
 
 
 async def main():
+    # Turn on the OLED display
+    Pin(16, Pin.OUT).high()
+    # Waits for the power to stabilize before initializing the display
+    await uasyncio.sleep(0.5)
+
     SettingsStore = datastore.DataStore("settings")
 
     user_id = SettingsStore.get("user_id")
@@ -47,40 +48,34 @@ async def main():
     lol = vcanvas.TextLabel(_vcanvas, text=f"{user_id}", text_size=1, text_color=1,
                             ax=0.5, ay=0.5, position_type="scale", x=0.25, y=0.25)
 
+    def update(stuff):
+        label.text += stuff
+
+    _keyboard = keyboard.Keyboard(lambda key: update(key),
+                                  lambda: update("\n"),
+                                  lambda: update("LOL"))
+
     amogus = 1
 
-    try:
-        while True:
-            await uasyncio.sleep(1)
+    while True:
+        await uasyncio.sleep(1)
 
-            print("Looping", utime.ticks_ms())
-            Pin("LED", Pin.OUT).toggle()
+        print("Looping", utime.ticks_ms())
+        Pin("LED", Pin.OUT).toggle()
 
-            if amogus == 0:
-                # frame.x = 0.25
-                # frame.y = 0.25
-                frame.visible = True
-                lol.visible = False
-                # label.text = "Welcome!"
-                amogus = 1
-            elif amogus == 1:
-                # frame.x = 0.75
-                # frame.y = 0.75
-                frame.visible = False
-                lol.visible = True
-                # label.text = "Welcome"
-                amogus = 0
-    except:
-        print("Keyboard interrupt")
-    finally:
-        render_task.cancel()
-
-        try:
-            await render_task
-        except uasyncio.CancelledError:
-            _display.clear()
-            print("Cancelled render task")
+        if amogus == 0:
+            # frame.x = 0.25
+            # frame.y = 0.25
+            frame.visible = True
+            lol.visible = False
+            # label.text = "Welcome!"
+            amogus = 1
+        elif amogus == 1:
+            # frame.x = 0.75
+            # frame.y = 0.75
+            frame.visible = False
+            lol.visible = True
+            # label.text = "Welcome"
+            amogus = 0
 
 uasyncio.run(main())
-
-# Return sth on main() so the try catch on uasyncio.run can catch it and do stuff on exit

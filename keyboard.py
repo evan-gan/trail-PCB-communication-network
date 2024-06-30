@@ -90,7 +90,11 @@ class Keyboard:
 
     keys_cooldown = {}
 
-    def __init__(self, sendMSG, appendToDraft, deleteLastCharOfDraft):
+    def __init__(self, onKeyPress, onEnter, onBackspace):
+        self.onKeyPress = onKeyPress
+        self.onEnter = onEnter
+        self.onBackspace = onBackspace
+
         for key, value in self.pull_downs.items():
             setattr(self, key, Pin(value, Pin.IN, Pin.PULL_DOWN))
 
@@ -136,10 +140,12 @@ class Keyboard:
         key_values = self.KEYS.get(RowCol)
 
         if key_values:
-            print(key_values[self.getShiftPressed()])
+            self.onKeyPress(key_values[self.getShiftPressed()])
         elif RowCol == '36':
+            self.onEnter()
             print("Enter")
         elif RowCol == '65':
+            self.onBackspace()
             print("Backspace")
 
     def getColPressed(self):

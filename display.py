@@ -21,7 +21,8 @@ class Display:
         char_width = 5
         char_height = 8
 
-        text_width = len(text) * char_width * text_size
+        text_width = max(len(line)
+                         for line in text.split("\n")) * char_width * text_size
         text_height = char_height * text_size  # Assuming single-line text.
 
         pos_x, pos_y, ax, ay, pos_type = position["x"], position[
