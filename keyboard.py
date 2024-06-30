@@ -3,7 +3,6 @@ import utime
 import CONSTS
 
 
-
 class Keyboard:
     # Format is ROWCOL : [key value, key value if shifted]
     KEYS = {
@@ -66,121 +65,97 @@ class Keyboard:
         "48": ["h", "H"]
     }
 
-    def __init__(self, sendMSG, appendToDraft, deleteLastCharOfDraft):
-        self.Col1 = Pin(6, Pin.IN, Pin.PULL_DOWN)
-        self.Col2 = Pin(7, Pin.IN, Pin.PULL_DOWN)
-        self.Col3 = Pin(8, Pin.IN, Pin.PULL_DOWN)
-        self.Col4 = Pin(9, Pin.IN, Pin.PULL_DOWN)
-        self.Col5 = Pin(13, Pin.IN, Pin.PULL_DOWN)
-        self.Col6 = Pin(14, Pin.IN, Pin.PULL_DOWN)
-        self.Col7 = Pin(5, Pin.IN, Pin.PULL_DOWN)
-        self.Col8 = Pin(4, Pin.IN, Pin.PULL_DOWN)
+    pull_downs = {
+        "Col1": 6,
+        "Col2": 7,
+        "Col3": 8,
+        "Col4": 9,
+        "Col5": 13,
+        "Col6": 14,
+        "Col7": 5,
+        "Col8": 4,
 
-        self.Row1 = Pin(27, Pin.IN, Pin.PULL_DOWN)
-        self.Row2 = Pin(26, Pin.IN, Pin.PULL_DOWN)
-        self.Row3 = Pin(22, Pin.IN, Pin.PULL_DOWN)
-        self.Row4 = Pin(21, Pin.IN, Pin.PULL_DOWN)
-        self.Row5 = Pin(19, Pin.IN, Pin.PULL_DOWN)
-        self.Row6 = Pin(18, Pin.IN, Pin.PULL_DOWN)
-        self.Row7 = Pin(17, Pin.IN, Pin.PULL_DOWN)
+        "Row1": 27,
+        "Row2": 26,
+        "Row3": 22,
+        "Row4": 21,
+        "Row5": 19,
+        "Row6": 18,
+        "Row7": 17,
+    }
+
+    pull_ups = {
+        "SHIFT": 28
+    }
+
+    keys_cooldown = {}
+
+    def __init__(self, sendMSG, appendToDraft, deleteLastCharOfDraft):
+        for key, value in self.pull_downs.items():
+            setattr(self, key, Pin(value, Pin.IN, Pin.PULL_DOWN))
+
+        for key, value in self.pull_ups.items():
+            setattr(self, key, Pin(value, Pin.IN, Pin.PULL_UP))
 
         # Set up the interrupts on the rising edge (button press) for each pin
-        self.Col1.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col2.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col3.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col4.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col5.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col6.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col7.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Col8.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-
-        self.Row1.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Row2.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Row3.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Row4.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Row5.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Row6.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
-        self.Row7.irq(trigger=Pin.IRQ_RISING, handler=self.handleKeyPress)
+        for key, value in self.pull_downs.items():
+            getattr(self, key).irq(trigger=Pin.IRQ_RISING,
+                                   handler=self.handleKeyPress)
 
         self.SHIFT_PIN = Pin(28, Pin.IN, Pin.PULL_UP)
 
         self.last_press_time = 0
-        # self.last_press_time_d = 0
-
-        #Append text to draft
-        self.appendToDraft = appendToDraft
-        #Delete the last letter added to the draft
-        self.deleteLastCharOfDraft = deleteLastCharOfDraft
-        #Function to send a message when enter is pressed
-        self.sendMSG = sendMSG
-
-        # self.SHIFT_PIN.irq(trigger=Pin.IRQ_FALLING, handler=self.shift_pressed)
 
     def getShiftPressed(self):
-        #Returns 1 if pressed, and 0 if not
-        if self.SHIFT_PIN.value() == 0:
-            return 1
-        else:
-            return 0
+        # Returns 1 if pressed, and 0 if not
+        return 1 if self.SHIFT_PIN.value() == 0 else 0
+
+        # if self.SHIFT_PIN.value() == 0:
+        #     return 1
+        # else:
+        #     return 0
 
     def handleKeyPress(self, pin):
-        # print("Called!")
+        # print("Called!", pin)
+
+        RowCol = self.getRowPressed() + self.getColPressed()
+
+        if "0" in RowCol:
+            return
+
         current_time = utime.ticks_ms()
-        # Check if the debounce time (200 ms) has passed, if it has not return
-        if utime.ticks_diff(current_time, self.last_press_time) > CONSTS.DEBOUNCE_TIME:
-            self.last_press_time = current_time
+
+        # Check if the debounce time (150 ms) has passed, if it has not return
+        if utime.ticks_diff(current_time, self.keys_cooldown.get(RowCol, CONSTS.KEYBOARD_DEBOUNCE_TIME_MS + 1)) > CONSTS.KEYBOARD_DEBOUNCE_TIME_MS:
+            self.keys_cooldown[RowCol] = current_time
         else:
             return
 
-        RowCol = self.getRowColPressed()
         # print(f"{RowCol} was pressed!")
-        if self.KEYS.get(RowCol, "nil") != "nil":
-            self.appendToDraft((self.KEYS.get(RowCol))[self.getShiftPressed()]) # type: ignore
-        elif RowCol == '36':
-            self.sendMSG()
-        elif RowCol == '65':
-            self.deleteLastCharOfDraft()
 
-    def getRowColPressed(self):
-        return str(self.getRowPressed()) + str(self.getColPressed())
+        key_values = self.KEYS.get(RowCol)
+
+        if key_values:
+            print(key_values[self.getShiftPressed()])
+        elif RowCol == '36':
+            print("Enter")
+        elif RowCol == '65':
+            print("Backspace")
 
     def getColPressed(self):
-        if self.Col1.value() == 1:
-            return 1
-        elif self.Col2.value() == 1:
-            return 2
-        elif self.Col3.value() == 1:
-            return 3
-        elif self.Col4.value() == 1:
-            return 4
-        elif self.Col5.value() == 1:
-            return 5
-        elif self.Col6.value() == 1:
-            return 6
-        elif self.Col7.value() == 1:
-            return 7
-        elif self.Col8.value() == 1:
-            return 8
+        cols = {k: v for k, v in self.pull_downs.items() if k.startswith("Col")}
+
+        for col in cols:
+            if getattr(self, col).value() == 1:
+                return col.split("Col")[1]
+
+        return "0"
 
     def getRowPressed(self):
-        if self.Row1.value() == 1:
-            return 1
-        elif self.Row2.value() == 1:
-            return 2
-        elif self.Row3.value() == 1:
-            return 3
-        elif self.Row4.value() == 1:
-            return 4
-        elif self.Row5.value() == 1:
-            return 5
-        elif self.Row6.value() == 1:
-            return 6
-        elif self.Row7.value() == 1:
-            return 7
-def dummyFunc(input):
-    print(input)
-keyboard = Keyboard(dummyFunc,dummyFunc,dummyFunc)
+        rows = {k: v for k, v in self.pull_downs.items() if k.startswith("Row")}
 
-while True:
-    utime.sleep(1)
-    # print("Running...")
+        for row in rows:
+            if getattr(self, row).value() == 1:
+                return row.split("Row")[1]
+
+        return "0"

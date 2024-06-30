@@ -13,6 +13,10 @@ class Display:
         self.display = SSD1306_I2C(
             self.display_width, self.display_height, self.i2c, page_addressing=False)
 
+    def clear(self):
+        self.display.fill(0)
+        self.display.show()
+
     def calculate_text_position(self, text, parent_size, parent_position, position, text_size):
         char_width = 5
         char_height = 8

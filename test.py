@@ -70,12 +70,17 @@ async def main():
                 lol.visible = True
                 # label.text = "Welcome"
                 amogus = 0
+    except:
+        print("Keyboard interrupt")
     finally:
         render_task.cancel()
 
         try:
             await render_task
         except uasyncio.CancelledError:
+            _display.clear()
             print("Cancelled render task")
 
 uasyncio.run(main())
+
+# Return sth on main() so the try catch on uasyncio.run can catch it and do stuff on exit
