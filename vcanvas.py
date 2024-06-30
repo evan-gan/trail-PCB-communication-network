@@ -5,13 +5,9 @@
 # TODO: Add more UI components (Scrolling frame, buttons, etc)
 # TODO: Check the remove and update methods in vCanvas again cuz like the #2 todo i kinda rushed it
 
-import time
-import utime
-
-import uasyncio as asyncio
+import uasyncio
 # import _thread
 
-import lib.cframebuf as framebuf
 import lib.utils as utils
 
 
@@ -30,10 +26,13 @@ class vCanvas:
 
     def update(self, key, data):
         self.data[key] = data
+        # self.renderCb(self.data)
 
     async def render(self):
+        # return
+
         while True:
-            await asyncio.sleep(1/60)
+            await uasyncio.sleep(1/120)
             self.renderCb(self.data)
 
 
@@ -148,3 +147,16 @@ class TextLabel(UIComponent):
 
     # def __init__(self, container, data):
     #     super().__init__(container, data, class_name="TextLabel")
+
+
+class TextBox(UIComponent):
+    text = PropertyDescriptor("text", str, default="")
+
+    editable = PropertyDescriptor("editable", bool, default=True)
+
+    text_size = PropertyDescriptor("text_size", int, default=1)
+    text_color = PropertyDescriptor("text_color", int, default=1)
+
+    def focus(self):
+        if self.editable:
+            self.update_container()

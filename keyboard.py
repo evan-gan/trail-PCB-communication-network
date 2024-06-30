@@ -1,5 +1,7 @@
 from machine import Pin
+import uasyncio
 import utime
+
 import CONSTS
 
 
@@ -28,9 +30,8 @@ class Keyboard:
         '33': ["l", "L"],
         '34': [";", ":"],
         '35': ["'", '"'],
-        # '36': ENTER KEY
         '37': ["z", "Z"],
-        '28': ["x", "X"],
+        '38': ["x", "X"],
         "71": ["1", "!"],
         "72": ["2", "@"],
         "73": ["3", "#"],
@@ -43,7 +44,6 @@ class Keyboard:
         "62": ["0", ")"],
         "63": ["-", "_"],
         "64": ["=", "+"],
-        # 65 is backspace
         "66": ["q", "Q"],
         "67": ["w", "W"],
         "68": ["e", "E"],
@@ -63,6 +63,25 @@ class Keyboard:
         "46": ["f", "F"],
         "47": ["g", "G"],
         "48": ["h", "H"]
+    }
+
+    # actionKeys = {
+    #     "BACKSPACE": "65",
+    #     "ENTER": "36",
+
+    #     "LEFT": "12",
+    #     "UP": "13",
+    #     "RIGHT": "14",
+    #     "DOWN": "15"
+    # }
+
+    actionKeys = {
+        "65": "Backspace",
+        "36": "Enter",
+        "12": "Left",
+        "13": "Up",
+        "14": "Right",
+        "15": "Down",
     }
 
     pull_downs = {
@@ -90,10 +109,18 @@ class Keyboard:
 
     keys_cooldown = {}
 
-    def __init__(self, onKeyPress, onEnter, onBackspace):
+    focused_element = None
+
+    def __init__(self, onKeyPress, onEnter, onBackspace, onLeft, onUp, onRight, onDown):
         self.onKeyPress = onKeyPress
+
         self.onEnter = onEnter
         self.onBackspace = onBackspace
+
+        self.onLeft = onLeft
+        self.onUp = onUp
+        self.onRight = onRight
+        self.onDown = onDown
 
         for key, value in self.pull_downs.items():
             setattr(self, key, Pin(value, Pin.IN, Pin.PULL_DOWN))
@@ -110,14 +137,10 @@ class Keyboard:
 
         self.last_press_time = 0
 
-    def getShiftPressed(self):
-        # Returns 1 if pressed, and 0 if not
-        return 1 if self.SHIFT_PIN.value() == 0 else 0
-
-        # if self.SHIFT_PIN.value() == 0:
-        #     return 1
-        # else:
-        #     return 0
+    async def listenForBackspace(self):
+        while True:
+            await uasyncio.sleep(1/30)
+            
 
     def handleKeyPress(self, pin):
         # print("Called!", pin)
@@ -137,16 +160,18 @@ class Keyboard:
 
         # print(f"{RowCol} was pressed!")
 
-        key_values = self.KEYS.get(RowCol)
+        action = self.actionKeys.get(RowCol)
 
-        if key_values:
-            self.onKeyPress(key_values[self.getShiftPressed()])
-        elif RowCol == '36':
-            self.onEnter()
-            print("Enter")
-        elif RowCol == '65':
-            self.onBackspace()
-            print("Backspace")
+        if action:
+            getattr(self, f"on{action}")()
+
+            return
+
+        key = self.KEYS.get(RowCol)
+
+        if key:
+            self.onKeyPress(
+                key[1 if self.SHIFT_PIN.value() == 0 else 0])
 
     def getColPressed(self):
         cols = {k: v for k, v in self.pull_downs.items() if k.startswith("Col")}

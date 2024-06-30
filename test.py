@@ -1,6 +1,4 @@
-from machine import Pin, I2C, unique_id
-import utime
-import math
+from machine import Pin, unique_id
 import uasyncio
 import hashlib
 import binascii
@@ -9,6 +7,7 @@ import datastore
 import vcanvas
 import display
 import keyboard
+import typewriter
 
 
 async def main():
@@ -39,43 +38,62 @@ async def main():
 
     render_task = uasyncio.create_task(_vcanvas.render())
 
-    frame = vcanvas.Frame(_vcanvas, width=64, height=32, fill=False,
-                          ax=0.5, ay=0.5, position_type="scale", x=0.5, y=0.5)
+    ui_welcome_text = vcanvas.TextLabel(_vcanvas, text="", text_size=1, text_color=1,
+                                        ax=0, ay=0.5, position_type="scale", x=0.1, y=0.25)
 
-    label = vcanvas.TextLabel(frame, text="Welcome!", text_size=1, text_color=1,
-                              ax=0.5, ay=0.5, position_type="scale", x=0.5, y=0.5)
+    ui_welcome_text_tw = typewriter.Typewriter(
+        ui_welcome_text, [
+            "Welcome, ",
+            0.5,
+            f"user {user_id}!",
+        ])
 
-    lol = vcanvas.TextLabel(_vcanvas, text=f"{user_id}", text_size=1, text_color=1,
-                            ax=0.5, ay=0.5, position_type="scale", x=0.25, y=0.25)
+    ui_welcome_text_tw.start()
 
-    def update(stuff):
-        label.text += stuff
+    await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+
+    ui_enter_name = vcanvas.TextLabel(_vcanvas, text="", text_size=1, text_color=1,
+                                      ax=0, ay=0.5, position_type="scale", x=0.1, y=0.45)
+
+    ui_enter_name_tw = typewriter.Typewriter(
+        ui_enter_name, [
+            "Enter your name: "
+        ])
+
+    ui_enter_name_tw.start()
+
+    await uasyncio.sleep(ui_enter_name_tw.total_time + 2)
+
+    ui_name_box = vcanvas.TextBox(_vcanvas, text="", text_size=1, text_color=1,
+                                  ax=0, ay=0.5, position_type="scale", x=0.1, y=0.55)
+
+    ui_name_box.focus()
+
+    # def update(stuff):
+    #     label.text += stuff
+
+    # def dele():
+    #     if label.text:
+    #         label.text = label.text[:-1]
 
     _keyboard = keyboard.Keyboard(lambda key: update(key),
                                   lambda: update("\n"),
-                                  lambda: update("LOL"))
+                                  lambda: dele())
 
-    amogus = 1
+    amogus = 0
 
     while True:
         await uasyncio.sleep(1)
 
-        print("Looping", utime.ticks_ms())
+        # print("Looping", utime.ticks_ms())
         Pin("LED", Pin.OUT).toggle()
 
         if amogus == 0:
-            # frame.x = 0.25
-            # frame.y = 0.25
-            frame.visible = True
-            lol.visible = False
-            # label.text = "Welcome!"
             amogus = 1
         elif amogus == 1:
-            # frame.x = 0.75
-            # frame.y = 0.75
-            frame.visible = False
-            lol.visible = True
-            # label.text = "Welcome"
+
             amogus = 0
+
+        # await uasyncio.sleep(2)
 
 uasyncio.run(main())
