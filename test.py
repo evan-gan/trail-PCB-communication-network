@@ -40,7 +40,6 @@ async def main():
         pass
 
     _keyboard = keyboard.Keyboard(lambda key: dummyFunc(key),
-                                  lambda: dummyFunc("\n"),
                                   lambda: dummyFunc(""),
                                   lambda: dummyFunc(""),
                                   lambda: dummyFunc(""),

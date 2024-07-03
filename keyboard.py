@@ -109,10 +109,10 @@ class Keyboard:
 
     keys_cooldown = {}
 
-    def __init__(self, onKeyPress, onEnter, onLeft, onUp, onRight, onDown):
+    def __init__(self, onKeyPress, onLeft, onUp, onRight, onDown):
         self.onKeyPress = onKeyPress
 
-        self.onEnter = onEnter
+        self.onEnter = 
 
         self.onLeft = onLeft
         self.onUp = onUp
@@ -136,9 +136,10 @@ class Keyboard:
 
         self.last_press_time = 0
 
-    async def listenForBackspace(self):
-        while True:
-            await uasyncio.sleep(1/30)
+    def checkKeyCooldown(self, RowCol):
+        current_time = utime.ticks_ms()
+
+        return utime.ticks_diff(current_time, self.keys_cooldown.get(RowCol, CONSTS.KEYBOARD_DEBOUNCE_TIME_MS + 1)) > CONSTS.KEYBOARD_DEBOUNCE_TIME_MS
 
     def handleKeyPress(self, pin):
         # print("Called!", pin)
@@ -148,11 +149,9 @@ class Keyboard:
         if "0" in RowCol:
             return
 
-        current_time = utime.ticks_ms()
-
         # Check if the debounce time (150 ms) has passed, if it has not return
-        if utime.ticks_diff(current_time, self.keys_cooldown.get(RowCol, CONSTS.KEYBOARD_DEBOUNCE_TIME_MS + 1)) > CONSTS.KEYBOARD_DEBOUNCE_TIME_MS:
-            self.keys_cooldown[RowCol] = current_time
+        if self.checkKeyCooldown(RowCol):
+            self.keys_cooldown[RowCol] = utime.ticks_ms()
         else:
             return
 
