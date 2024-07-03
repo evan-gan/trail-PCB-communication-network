@@ -36,6 +36,17 @@ async def main():
     _vcanvas = vcanvas.vCanvas(
         display_width, display_height, lambda data: _display.render(data))
 
+    def dummyFunc(key):
+        pass
+
+    _keyboard = keyboard.Keyboard(lambda key: dummyFunc(key),
+                                  lambda: dummyFunc("\n"),
+                                  lambda: dummyFunc(""),
+                                  lambda: dummyFunc(""),
+                                  lambda: dummyFunc(""),
+                                  lambda: dummyFunc(""),
+                                  )
+
     render_task = uasyncio.create_task(_vcanvas.render())
 
     ui_welcome_text = vcanvas.TextLabel(_vcanvas, text="", text_size=1, text_color=1,
@@ -62,12 +73,12 @@ async def main():
 
     ui_enter_name_tw.start()
 
-    await uasyncio.sleep(ui_enter_name_tw.total_time + 2)
+    await uasyncio.sleep(ui_enter_name_tw.total_time + 3)
 
     ui_name_box = vcanvas.TextBox(_vcanvas, text="", text_size=1, text_color=1,
-                                  ax=0, ay=0.5, position_type="scale", x=0.1, y=0.55)
+                                  ax=0, ay=0.5, position_type="scale", x=0.1, y=0.65)
 
-    ui_name_box.focus()
+    _keyboard.setFocus(ui_name_box)
 
     # def update(stuff):
     #     label.text += stuff
@@ -76,9 +87,9 @@ async def main():
     #     if label.text:
     #         label.text = label.text[:-1]
 
-    _keyboard = keyboard.Keyboard(lambda key: update(key),
-                                  lambda: update("\n"),
-                                  lambda: dele())
+    # _keyboard = user_input.Keyboard(lambda key: update(key),
+    #                               lambda: update("\n"),
+    #                               lambda: dele())
 
     amogus = 0
 

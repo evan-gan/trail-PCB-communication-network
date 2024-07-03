@@ -156,7 +156,3 @@ class TextBox(UIComponent):
 
     text_size = PropertyDescriptor("text_size", int, default=1)
     text_color = PropertyDescriptor("text_color", int, default=1)
-
-    def focus(self):
-        if self.editable:
-            self.update_container()

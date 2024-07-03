@@ -81,7 +81,7 @@ class Display:
 
         class_name = prop["class_name"]
 
-        if class_name == "TextLabel":
+        if class_name == "TextLabel" or class_name == "TextBox":
             position = prop["position"]
 
             text = prop["text"]

@@ -109,18 +109,17 @@ class Keyboard:
 
     keys_cooldown = {}
 
-    focused_element = None
-
-    def __init__(self, onKeyPress, onEnter, onBackspace, onLeft, onUp, onRight, onDown):
+    def __init__(self, onKeyPress, onEnter, onLeft, onUp, onRight, onDown):
         self.onKeyPress = onKeyPress
 
         self.onEnter = onEnter
-        self.onBackspace = onBackspace
 
         self.onLeft = onLeft
         self.onUp = onUp
         self.onRight = onRight
         self.onDown = onDown
+
+        self.focused_element = None
 
         for key, value in self.pull_downs.items():
             setattr(self, key, Pin(value, Pin.IN, Pin.PULL_DOWN))
@@ -140,7 +139,6 @@ class Keyboard:
     async def listenForBackspace(self):
         while True:
             await uasyncio.sleep(1/30)
-            
 
     def handleKeyPress(self, pin):
         # print("Called!", pin)
@@ -163,15 +161,26 @@ class Keyboard:
         action = self.actionKeys.get(RowCol)
 
         if action:
-            getattr(self, f"on{action}")()
+            if action == "Backspace" and self.focused_element:
+                self.focused_element.text = self.focused_element.text[:-1]
+            else:
+                getattr(self, f"on{action}")()
 
             return
 
         key = self.KEYS.get(RowCol)
 
         if key:
-            self.onKeyPress(
-                key[1 if self.SHIFT_PIN.value() == 0 else 0])
+            if self.focused_element:
+                print("TYPING")
+                print(self.focused_element)
+                print(key[1 if self.SHIFT_PIN.value() == 0 else 0])
+
+                self.focused_element.text += key[1 if self.SHIFT_PIN.value()
+                                                 == 0 else 0]
+            # else:
+            #     self.onKeyPress(
+            #         key[1 if self.SHIFT_PIN.value() == 0 else 0])
 
     def getColPressed(self):
         cols = {k: v for k, v in self.pull_downs.items() if k.startswith("Col")}
@@ -190,3 +199,6 @@ class Keyboard:
                 return row.split("Row")[1]
 
         return "0"
+
+    def setFocus(self, element):
+        self.focused_element = element
