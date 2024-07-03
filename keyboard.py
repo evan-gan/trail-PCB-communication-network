@@ -112,8 +112,6 @@ class Keyboard:
     def __init__(self, onKeyPress, onLeft, onUp, onRight, onDown):
         self.onKeyPress = onKeyPress
 
-        self.onEnter = 
-
         self.onLeft = onLeft
         self.onUp = onUp
         self.onRight = onRight
@@ -160,8 +158,13 @@ class Keyboard:
         action = self.actionKeys.get(RowCol)
 
         if action:
-            if action == "Backspace" and self.focused_element:
-                self.focused_element.text = self.focused_element.text[:-1]
+            if self.focused_element:
+                if action == "Backspace":
+                    if hasattr(self.focused_element, "text"):
+                        self.focused_element.text = self.focused_element.text[:-1]
+                elif action == "Enter":
+                    if hasattr(self.focused_element, "onEnter"):
+                        self.focused_element.onEnter(self.focused_element)
             else:
                 getattr(self, f"on{action}")()
 

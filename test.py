@@ -75,9 +75,12 @@ async def main():
     await uasyncio.sleep(ui_enter_name_tw.total_time + 3)
 
     ui_name_box = vcanvas.TextBox(_vcanvas, text="", text_size=1, text_color=1,
-                                  ax=0, ay=0.5, position_type="scale", x=0.1, y=0.65)
+                                  ax=0, ay=0.5, position_type="scale", x=0.1, y=0.65, onEnter=lambda self: saveName(self.text))
 
     _keyboard.setFocus(ui_name_box)
+
+    def saveName(name):
+        SettingsStore.add("name", name)
 
     # def update(stuff):
     #     label.text += stuff
