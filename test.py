@@ -49,7 +49,7 @@ async def main():
     def dummyFunc(key):
         pass
 
-    render_task = uasyncio.create_task(_vcanvas.render())
+    # render_task = uasyncio.create_task(_vcanvas.render())
 
     name = SettingsStore.get("name")
 
@@ -66,8 +66,16 @@ async def main():
                 f"{name}!",
             ])
 
+        ui_welcome_text_tw.start()
+
+        await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+
         ui_continue_text = vcanvas.TextLabel(ui_welcome_screen, text="Press any key to continue...", text_size=1, text_color=1,
                                              ax=0, ay=0.5, position_type="scale", x=0.1, y=1 - (8/64))
+
+        ui_continue_text.text = "Press any key to continue..."
+
+        await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui.home.UI_Home(_vcanvas)
     else:

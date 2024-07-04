@@ -1,116 +1,91 @@
-# Creates a virtual canvas that serves as an intermediary layer between the UI elements and the real display.
-
-# TODO: Improve update logic in UIComponent so that it doesnt reconstruct the entire data object every time a property is updated (for efficiency)
-# TODO: Fool-check the recursive container update logic cuz i kinda wrote it without thinking too much
-# TODO: Add more UI components (Scrolling frame, buttons, etc)
-# TODO: Check the remove and update methods in vCanvas again cuz like the #2 todo i kinda rushed it
-
-import uasyncio
-# import _thread
-
 import lib.utils as utils
+import uasyncio
 
 
 class vCanvas:
     def __init__(self, width, height, renderCb):
         self.display_width = width
         self.display_height = height
-
         self.renderCb = renderCb
+        self.components = {}
 
-        self.data = {}
+        # Dirty = Has the component been changed since last render?
+        # Analogy:
+        # Think of it like a whiteboard. If someone makes a small change, you don't erase and redraw the entire board immediately.
+        # You might wait until a few changes have accumulated(the board gets "dirty") before cleaning it and redrawing everything.
+        self.dirty = False
 
     def remove(self, key):
-        if key in self.data:
-            del self.data[key]
+        if key in self.components:
+            del self.components[key]
+            self._trigger_render()
 
     def update(self, key, data):
-        self.data[key] = data
-        self.renderCb(self.data)
+        self.components[key] = data
+        self._trigger_render()
 
-    async def render(self):
-        return
+    def _trigger_render(self):
+        if not self.dirty:
+            self.dirty = True
+            uasyncio.create_task(self._render())
 
-        while True:
-            await uasyncio.sleep(1/120)
-            self.renderCb(self.data)
-
-
-class PropertyDescriptor:
-    def __init__(self, name, type_, *, default=None, immutable=False):
-        self.name = name
-        self.type = type_
-        self.default = default  # corrected to use default value
-        self.immutable = immutable
-        self.private_name = '_' + name  # Explicitly set the private_name
-
-    # def __set_name__(self, owner, name):
-    #     self.private_name = '_' + name
-
-    def __get__(self, obj, objtype=None):
-        return getattr(obj, self.private_name, self.default)
-
-    def __set__(self, obj, value):
-        if hasattr(obj, self.private_name) and self.immutable:
-            raise AttributeError(
-                f"{self.name} is immutable and cannot be altered once set.")
-
-        if not self.type == any:
-            if not isinstance(value, self.type):
-                raise TypeError(
-                    f"Expected {self.name} to be {self.type.__name__}, got {type(value).__name__}")
-
-        setattr(obj, self.private_name, value)
-
-        # Update the container if it exists
-        if hasattr(obj, "update_container"):
-            obj.update_container()
+    async def _render(self):
+        await uasyncio.sleep(0)  # Yield to allow other tasks to run
+        if self.dirty:
+            self.renderCb(self.components)
+            self.dirty = False
 
 
 class UIComponent:
-    class_name = PropertyDescriptor("class_name", str, immutable=True)
-
-    x = PropertyDescriptor("x", (int, float), default=0)
-    y = PropertyDescriptor("y", (int, float), default=0)
-
-    ax = PropertyDescriptor("ax", (int, float), default=0)
-    ay = PropertyDescriptor("ay", (int, float), default=0)
-
-    visible = PropertyDescriptor("visible", bool, default=True)
-
-    position_type = PropertyDescriptor(
-        "position_type", str, default="offset")
-
     def __init__(self, container, **kwargs):
         self.key = utils.random_string(8)
         self.container = container
         self.children = {}
-        self.class_name = self.__class__.__name__
+        self.properties = {
+            "class_name": self.__class__.__name__,
+            "x": 0, "y": 0, "ax": 0, "ay": 0,
+            "visible": True,
+            "position_type": "offset"
+        }
+        self.update_properties(kwargs)
 
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+    def __getattr__(self, name):
+        if name in self.properties:
+            return self.properties[name]
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
-        self.update_container()
+    def __setattr__(self, name, value):
+        if name in ['key', 'container', 'children', 'properties']:
+            super().__setattr__(name, value)
+        else:
+            self.update_property(name, value)
+
+    def update_property(self, name, value):
+        if self.properties.get(name) != value:
+            self.properties[name] = value
+            self.update_container()
+
+    def update_properties(self, new_properties):
+        changed = False
+        for key, value in new_properties.items():
+            if self.properties.get(key) != value:
+                self.properties[key] = value
+                changed = True
+        if changed:
+            self.update_container()
 
     def update(self, key, data):
-        self.children[key] = data
-        self.update_container()
+        if self.children.get(key) != data:
+            self.children[key] = data
+            self.update_container()
 
     def destroy(self):
         self.children = {}
-        del self.container[self.key]
+        self.container.remove(self.key)
 
     def update_container(self):
-        data = {}
-
-        # Collect all properties from UIComponent and its subclasses
-        for cls in [UIComponent, self.__class__]:
-            for key, descriptor in cls.__dict__.items():
-                if isinstance(descriptor, PropertyDescriptor):
-                    data[key] = getattr(self, key)
-
-        # Format position data
+        data = self.properties.copy()
         data["position"] = {
             "x": data.pop("x"),
             "y": data.pop("y"),
@@ -118,52 +93,53 @@ class UIComponent:
             "ay": data.pop("ay"),
             "type": data.pop("position_type"),
         }
-
         if "width" in data and "height" in data:
             data["size"] = {
                 "x": data.pop("width"),
                 "y": data.pop("height"),
-                "type": data.pop("size_type"),
+                "type": data.pop("size_type", "offset"),
             }
-
         if self.children:
             data["children"] = self.children
-
         self.container.update(self.key, data)
 
 
 class Group(UIComponent):
-    pass
+    def __init__(self, container, **kwargs):
+        super().__init__(container, **kwargs)
 
 
 class Frame(UIComponent):
-    size_type = PropertyDescriptor("size_type", str, default="offset")
-
-    width = PropertyDescriptor("width", (int, float), default=10)
-    height = PropertyDescriptor("height", (int, float), default=10)
-
-    fill = PropertyDescriptor("fill", bool, default=False)
-
-    # def __init__(self, container, data):
-    #     super().__init__(container, data, class_name="Frame")
+    def __init__(self, container, **kwargs):
+        super().__init__(container, **kwargs)
+        self.properties.update({
+            "size_type": "offset",
+            "width": 10,
+            "height": 10,
+            "fill": False
+        })
+        self.update_properties(kwargs)
 
 
 class TextLabel(UIComponent):
-    text = PropertyDescriptor("text", str, default="")
-
-    text_size = PropertyDescriptor("text_size", int, default=1)
-    text_color = PropertyDescriptor("text_color", int, default=1)
-
-    # def __init__(self, container, data):
-    #     super().__init__(container, data, class_name="TextLabel")
+    def __init__(self, container, **kwargs):
+        super().__init__(container, **kwargs)
+        self.properties.update({
+            "text": "",
+            "text_size": 1,
+            "text_color": 1
+        })
+        self.update_properties(kwargs)
 
 
 class TextBox(UIComponent):
-    text = PropertyDescriptor("text", str, default="")
-
-    editable = PropertyDescriptor("editable", bool, default=True)
-
-    text_size = PropertyDescriptor("text_size", int, default=1)
-    text_color = PropertyDescriptor("text_color", int, default=1)
-
-    onEnter = PropertyDescriptor("onEnter", any, default=None)
+    def __init__(self, container, **kwargs):
+        super().__init__(container, **kwargs)
+        self.properties.update({
+            "text": "",
+            "editable": True,
+            "text_size": 1,
+            "text_color": 1,
+            "onEnter": None
+        })
+        self.update_properties(kwargs)
