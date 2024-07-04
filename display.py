@@ -1,6 +1,7 @@
 from machine import Pin, I2C
 import utime
 import math
+import uasyncio
 from lib.ssd1306 import SSD1306_I2C
 
 
