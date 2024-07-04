@@ -11,6 +11,8 @@ import typewriter
 
 import ui.home
 
+reset = True
+
 
 async def main():
     # Turn on the OLED display
@@ -19,6 +21,9 @@ async def main():
     await uasyncio.sleep(0.5)
 
     SettingsStore = datastore.DataStore("settings")
+
+    if reset:
+        SettingsStore.clear()
 
     user_id = SettingsStore.get("user_id")
 
@@ -126,20 +131,20 @@ async def main():
         #                               lambda: update("\n"),
         #                               lambda: dele())
 
-        # amogus = 0
+        amogus = 0
 
-        # while True:
-        #     await uasyncio.sleep(1)
+        while True:
+            await uasyncio.sleep(1)
 
-        #     # print("Looping", utime.ticks_ms())
-        #     Pin("LED", Pin.OUT).toggle()
+            # print("Looping", utime.ticks_ms())
+            Pin("LED", Pin.OUT).toggle()
 
-        #     if amogus == 0:
-        #         amogus = 1
-        #     elif amogus == 1:
+            if amogus == 0:
+                amogus = 1
+            elif amogus == 1:
 
-        #         amogus = 0
+                amogus = 0
 
-        #     # await uasyncio.sleep(2)
+            # await uasyncio.sleep(2)
 
 uasyncio.run(main())

@@ -167,7 +167,9 @@ class Keyboard:
                         print("Call onEnter!")
                         self.focused_element.onEnter(self.focused_element)
             else:
-                getattr(self, f"on{action}")()
+                # TODO: Lol
+                # getattr(self, f"on{action}")()
+                pass
 
             return
 
