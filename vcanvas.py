@@ -26,10 +26,10 @@ class vCanvas:
 
     def update(self, key, data):
         self.data[key] = data
-        # self.renderCb(self.data)
+        self.renderCb(self.data)
 
     async def render(self):
-        # return
+        return
 
         while True:
             await uasyncio.sleep(1/120)
@@ -55,9 +55,10 @@ class PropertyDescriptor:
             raise AttributeError(
                 f"{self.name} is immutable and cannot be altered once set.")
 
-        if not isinstance(value, self.type):
-            raise TypeError(
-                f"Expected {self.name} to be {self.type.__name__}, got {type(value).__name__}")
+        if not self.type == any:
+            if not isinstance(value, self.type):
+                raise TypeError(
+                    f"Expected {self.name} to be {self.type.__name__}, got {type(value).__name__}")
 
         setattr(obj, self.private_name, value)
 
@@ -96,6 +97,10 @@ class UIComponent:
         self.children[key] = data
         self.update_container()
 
+    def destroy(self):
+        self.children = {}
+        del self.container[self.key]
+
     def update_container(self):
         data = {}
 
@@ -125,6 +130,10 @@ class UIComponent:
             data["children"] = self.children
 
         self.container.update(self.key, data)
+
+
+class Group(UIComponent):
+    pass
 
 
 class Frame(UIComponent):
@@ -157,4 +166,4 @@ class TextBox(UIComponent):
     text_size = PropertyDescriptor("text_size", int, default=1)
     text_color = PropertyDescriptor("text_color", int, default=1)
 
-    onEnter = PropertyDescriptor("onEnter", type(lambda: None), default=None)
+    onEnter = PropertyDescriptor("onEnter", any, default=None)

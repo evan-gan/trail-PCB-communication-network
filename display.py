@@ -116,8 +116,15 @@ class Display:
                 for child_key, child_prop in prop["children"].items():
                     self.render_component(
                         child_prop, [width, height], [pos_x,  pos_y])
+        elif class_name == "Group":
+            if "children" in prop:
+                for child_key, child_prop in prop["children"].items():
+                    self.render_component(
+                        child_prop, parent_size, parent_position)
 
     def render(self, data):
+        print(data)
+
         self.display.fill(0)
 
         for key, prop in data.items():

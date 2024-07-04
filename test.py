@@ -9,6 +9,8 @@ import display
 import keyboard
 import typewriter
 
+import ui.home
+
 
 async def main():
     # Turn on the OLED display
@@ -33,11 +35,9 @@ async def main():
     display_width, display_height = 128, 64
 
     _display = display.Display(display_width, display_height)
+
     _vcanvas = vcanvas.vCanvas(
         display_width, display_height, lambda data: _display.render(data))
-
-    def dummyFunc(key):
-        pass
 
     _keyboard = keyboard.Keyboard(lambda key: dummyFunc(key),
                                   lambda: dummyFunc(""),
@@ -46,67 +46,92 @@ async def main():
                                   lambda: dummyFunc(""),
                                   )
 
+    def dummyFunc(key):
+        pass
+
     render_task = uasyncio.create_task(_vcanvas.render())
 
-    ui_welcome_text = vcanvas.TextLabel(_vcanvas, text="", text_size=1, text_color=1,
+    name = SettingsStore.get("name")
+
+    ui_welcome_screen = vcanvas.Group(_vcanvas)
+
+    ui_welcome_text = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
                                         ax=0, ay=0.5, position_type="scale", x=0.1, y=0.25)
 
-    ui_welcome_text_tw = typewriter.Typewriter(
-        ui_welcome_text, [
-            "Welcome, ",
-            0.5,
-            f"user {user_id}!",
-        ])
+    if name:
+        ui_welcome_text_tw = typewriter.Typewriter(
+            ui_welcome_text, [
+                "Welcome back, ",
+                0.5,
+                f"{name}!",
+            ])
 
-    ui_welcome_text_tw.start()
+        ui_continue_text = vcanvas.TextLabel(ui_welcome_screen, text="Press any key to continue...", text_size=1, text_color=1,
+                                             ax=0, ay=0.5, position_type="scale", x=0.1, y=1 - (8/64))
 
-    await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        ui.home.UI_Home(_vcanvas)
+    else:
+        def saveName(name):
+            SettingsStore.add("name", name)
 
-    ui_enter_name = vcanvas.TextLabel(_vcanvas, text="", text_size=1, text_color=1,
-                                      ax=0, ay=0.5, position_type="scale", x=0.1, y=0.45)
+            print("Saved name to database")
 
-    ui_enter_name_tw = typewriter.Typewriter(
-        ui_enter_name, [
-            "Enter your name: "
-        ])
+            ui_welcome_screen.destroy()
+            ui.home.UI_Home(_vcanvas)
 
-    ui_enter_name_tw.start()
+        ui_welcome_text_tw = typewriter.Typewriter(
+            ui_welcome_text, [
+                "Welcome, ",
+                0.5,
+                f"user {user_id}!",
+            ])
 
-    await uasyncio.sleep(ui_enter_name_tw.total_time + 3)
+        ui_enter_name = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
+                                          ax=0, ay=0.5, position_type="scale", x=0.1, y=0.45)
 
-    ui_name_box = vcanvas.TextBox(_vcanvas, text="", text_size=1, text_color=1,
-                                  ax=0, ay=0.5, position_type="scale", x=0.1, y=0.65, onEnter=lambda self: saveName(self.text))
+        ui_enter_name_tw = typewriter.Typewriter(
+            ui_enter_name, [
+                "Enter your name: "
+            ])
 
-    _keyboard.setFocus(ui_name_box)
+        ui_name_box = vcanvas.TextBox(ui_welcome_screen, text="", text_size=1, text_color=1,
+                                      ax=0, ay=0.5, position_type="scale", x=0.1, y=0.65, onEnter=lambda self: saveName(self.text))
 
-    def saveName(name):
-        SettingsStore.add("name", name)
+        ui_welcome_text_tw.start()
 
-    # def update(stuff):
-    #     label.text += stuff
+        await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
 
-    # def dele():
-    #     if label.text:
-    #         label.text = label.text[:-1]
+        ui_enter_name_tw.start()
 
-    # _keyboard = user_input.Keyboard(lambda key: update(key),
-    #                               lambda: update("\n"),
-    #                               lambda: dele())
+        await uasyncio.sleep(ui_enter_name_tw.total_time + 3)
 
-    amogus = 0
+        _keyboard.setFocus(ui_name_box)
 
-    while True:
-        await uasyncio.sleep(1)
+        # def update(stuff):
+        #     label.text += stuff
 
-        # print("Looping", utime.ticks_ms())
-        Pin("LED", Pin.OUT).toggle()
+        # def dele():
+        #     if label.text:
+        #         label.text = label.text[:-1]
 
-        if amogus == 0:
-            amogus = 1
-        elif amogus == 1:
+        # _keyboard = user_input.Keyboard(lambda key: update(key),
+        #                               lambda: update("\n"),
+        #                               lambda: dele())
 
-            amogus = 0
+        # amogus = 0
 
-        # await uasyncio.sleep(2)
+        # while True:
+        #     await uasyncio.sleep(1)
+
+        #     # print("Looping", utime.ticks_ms())
+        #     Pin("LED", Pin.OUT).toggle()
+
+        #     if amogus == 0:
+        #         amogus = 1
+        #     elif amogus == 1:
+
+        #         amogus = 0
+
+        #     # await uasyncio.sleep(2)
 
 uasyncio.run(main())

@@ -164,6 +164,7 @@ class Keyboard:
                         self.focused_element.text = self.focused_element.text[:-1]
                 elif action == "Enter":
                     if hasattr(self.focused_element, "onEnter"):
+                        print("Call onEnter!")
                         self.focused_element.onEnter(self.focused_element)
             else:
                 getattr(self, f"on{action}")()
@@ -174,10 +175,6 @@ class Keyboard:
 
         if key:
             if self.focused_element:
-                print("TYPING")
-                print(self.focused_element)
-                print(key[1 if self.SHIFT_PIN.value() == 0 else 0])
-
                 self.focused_element.text += key[1 if self.SHIFT_PIN.value()
                                                  == 0 else 0]
             # else:
