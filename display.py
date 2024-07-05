@@ -124,7 +124,7 @@ class Display:
             # Wrap text
             wrapped_text = self.wrap_text_by_characters(text, available_width)
 
-            print(wrapped_text, available_width, x)
+            # print(wrapped_text, available_width, x)
 
             # Render each line of wrapped text
             for i, line in enumerate(wrapped_text.split('\n')):

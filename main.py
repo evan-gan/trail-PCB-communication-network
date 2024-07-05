@@ -62,20 +62,20 @@ async def main():
 
     ui_welcome_screen = vcanvas.Group(_vcanvas)
 
-    ui_welcome_text = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                        ax=0, ay=0.5, position_type="scale", x=0.05, y=0.25)
+    ui_welcome_label = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
+                                         ax=0, ay=0.5, position_type="scale", x=0.05, y=0.25)
 
     if name:
-        ui_welcome_text_tw = typewriter.Typewriter(
-            ui_welcome_text, [
+        ui_welcome_label_tw = typewriter.Typewriter(
+            ui_welcome_label, [
                 "ddddWelcome back, ",
                 0.5,
                 f"{name}!",
             ])
 
-        ui_welcome_text_tw.start()
+        ui_welcome_label_tw.start()
 
-        await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
         # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui_continue_text = vcanvas.TextLabel(ui_welcome_screen, text="Press any key to continue...", text_size=1, text_color=1,
@@ -83,10 +83,10 @@ async def main():
 
         ui_continue_text.text = "Press any key to continue..."
 
-        await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
         # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
-        ui.home.UI_Home(_vcanvas)
+        ui.home.UI_Home(_vcanvas, name)
     else:
         def saveName(name):
             SettingsStore.add("name", name)
@@ -94,38 +94,39 @@ async def main():
             print("Saved name to database")
 
             ui_welcome_screen.destroy()
+
             _keyboard.setFocus(None)
 
-            ui.home.UI_Home(_vcanvas)
+            res = ui.home.UI_Home(_vcanvas, name)
 
-        ui_welcome_text_tw = typewriter.Typewriter(
-            ui_welcome_text, [
+            uasyncio.create_task(res.start())
+
+        ui_welcome_label_tw = typewriter.Typewriter(
+            ui_welcome_label, [
                 "Welcome, ",
                 0.5,
                 f"user {user_id}!",
             ])
 
-        ui_enter_name = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                          ax=0, ay=0.5, position_type="scale", x=0.05, y=0.45)
+        ui_enter_name_label = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
+                                                ax=0, ay=0.5, position_type="scale", x=0.05, y=0.45)
 
-        del ui_welcome_text
-
-        ui_enter_name_tw = typewriter.Typewriter(
-            ui_enter_name, [
+        ui_enter_name_label_tw = typewriter.Typewriter(
+            ui_enter_name_label, [
                 "Enter your name: "
             ])
 
         ui_name_box = vcanvas.TextBox(ui_welcome_screen, text="", text_size=1, text_color=1, text_limit=19*3,
                                       ax=0, ay=0.5, position_type="scale", x=0.05, y=0.65, onEnter=lambda self: saveName(self.text))
 
-        ui_welcome_text_tw.start()
+        ui_welcome_label_tw.start()
 
-        await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
         # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
-        ui_enter_name_tw.start()
+        ui_enter_name_label_tw.start()
 
-        await uasyncio.sleep(ui_enter_name_tw.total_time + 3)
+        await uasyncio.sleep(ui_enter_name_label_tw.total_time + 3)
         # utime.sleep(ui_enter_name_tw.total_time + 3)
 
         _keyboard.setFocus(ui_name_box)
