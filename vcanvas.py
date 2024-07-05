@@ -39,21 +39,31 @@ class vCanvas:
         """
         self.display_width = width
         self.display_height = height
+
         # This callback is called when it's time to update the physical display
         self.renderCb = renderCb
+
         # Dictionary to store all UI components, keyed by their unique identifiers
         self.components = {}
+
+        # References to all active components
+        self.componentsList = {}
+
         self.dirty = False  # Flag to indicate if the canvas needs redrawing
 
-    def remove(self, key):
+    def destroy(self, key):
+        # def remove(self, key):
         """
         Remove a component from the canvas.
 
         :param key: Unique identifier of the component to remove.
         """
-        if key in self.components:
-            del self.components[key]
-            self._trigger_render()  # Mark canvas as dirty and schedule a render
+        # We can either do recursion to find the component and del it
+        # or we can build a minimal tree of the components
+        # then search the location like id1.id2.id3 then  we can del  it like
+        # del self.components["id1"]["id2"]["id3"]
+        # then we can trigger a render
+        # self._trigger_render()
 
     def update(self, key, data):
         """
@@ -63,9 +73,11 @@ class vCanvas:
         :param data: New data for the component.
         """
         self.components[key] = data
+
         self._trigger_render()  # Mark canvas as dirty and schedule a render
 
     def _trigger_render(self):
+        # def _trigger_render(self):
         """
         Schedule a render if one is not already pending.
         This method uses the dirty flag to prevent multiple render calls in quick succession.
@@ -73,14 +85,16 @@ class vCanvas:
         if not self.dirty:
             self.dirty = True
             # Create an asynchronous task for rendering
-            uasyncio.create_task(self._render())
+            # uasyncio.create_task(self._render())
+            self._render()
 
-    async def _render(self):
+    def _render(self):
+        # async def _render(self):
         """
         Asynchronous method to perform the actual render.
         This method yields control briefly to allow other tasks to run, then calls the render callback.
         """
-        await uasyncio.sleep(0)  # Yield control to allow other tasks to run
+        # await uasyncio.sleep(0)  # Yield control to allow other tasks to run
         if self.dirty:
             # Call the render callback with the current state of all components
             self.renderCb(self.components)
@@ -97,7 +111,9 @@ class UIComponent:
         """
         self.key = utils.random_string(
             8)  # Generate a unique key for this component
+
         self.container = container  # Reference to the parent container
+
         self.children = {}  # Dictionary to store child components if this is a container
         self.properties = {
             "class_name": self.__class__.__name__,
@@ -105,6 +121,7 @@ class UIComponent:
             "visible": True,
             "position_type": "offset"
         }
+
         # Set initial properties based on kwargs
         self.update_properties(kwargs)
 
@@ -141,6 +158,7 @@ class UIComponent:
         :param name: Name of the property to update.
         :param value: New value for the property.
         """
+
         if self.properties.get(name) != value:
             self.properties[name] = value
             self.update_container()  # Notify the container of the change
@@ -152,10 +170,12 @@ class UIComponent:
         :param new_properties: Dictionary of property names and their new values.
         """
         changed = False
+
         for key, value in new_properties.items():
             if self.properties.get(key) != value:
                 self.properties[key] = value
                 changed = True
+
         if changed:
             self.update_container()  # Notify the container of the changes
 
@@ -166,17 +186,17 @@ class UIComponent:
         :param key: Unique identifier of the child component.
         :param data: New data for the child component.
         """
+
         if self.children.get(key) != data:
             self.children[key] = data
             self.update_container()  # Notify the container of the change
 
-    def destroy(self):
+    def destroy(self, key=None):
         """
-        Remove this component from its container and clear its children.
+        Remove this component from its container.
         """
-        self.children = {}
-        # Remove this component from its parent container
-        self.container.remove(self.key)
+
+        self.container.destroy(self.key if key is None else key)
 
     def update_container(self):
         """
@@ -184,6 +204,7 @@ class UIComponent:
         This method is called whenever the component's state changes.
         """
         data = self.properties.copy()
+
         # Format position data
         data["position"] = {
             "x": data.pop("x"),
@@ -192,6 +213,7 @@ class UIComponent:
             "ay": data.pop("ay"),
             "type": data.pop("position_type"),
         }
+
         # Format size data if present
         if "width" in data and "height" in data:
             data["size"] = {
@@ -199,9 +221,11 @@ class UIComponent:
                 "y": data.pop("height"),
                 "type": data.pop("size_type", "offset"),
             }
+
         # Include children if any
         if self.children:
             data["children"] = self.children
+
         # Update the container with the new data
         self.container.update(self.key, data)
 
@@ -211,7 +235,9 @@ class Group(UIComponent):
     A Group is a basic container with no additional properties.
     It's used to logically group other components together.
     """
-    pass
+
+    def __init__(self, container, **kwargs):
+        super().__init__(container, **kwargs)
 
 
 class Frame(UIComponent):
@@ -223,12 +249,14 @@ class Frame(UIComponent):
         :param kwargs: Additional properties for the frame.
         """
         super().__init__(container, **kwargs)
+
         self.properties.update({
             "size_type": "offset",
             "width": 10,
             "height": 10,
             "fill": False
         })
+
         # Apply any frame-specific properties passed in kwargs
         self.update_properties(kwargs)
 
@@ -242,11 +270,13 @@ class TextLabel(UIComponent):
         :param kwargs: Additional properties for the text label.
         """
         super().__init__(container, **kwargs)
+
         self.properties.update({
             "text": "",
             "text_size": 1,
             "text_color": 1
         })
+
         # Apply any label-specific properties passed in kwargs
         self.update_properties(kwargs)
 
@@ -260,6 +290,7 @@ class TextBox(UIComponent):
         :param kwargs: Additional properties for the text box.
         """
         super().__init__(container, **kwargs)
+
         self.properties.update({
             "text": "",
             "editable": True,
@@ -267,5 +298,18 @@ class TextBox(UIComponent):
             "text_color": 1,
             "onEnter": None  # Callback function to be called when Enter is pressed
         })
+
         # Apply any text box-specific properties passed in kwargs
         self.update_properties(kwargs)
+
+
+# - root
+#    - group1
+#        -label1
+#         -label2
+#         -group2
+#            -label3
+#             -label4
+#     - group3
+#         -label5
+#         -label6

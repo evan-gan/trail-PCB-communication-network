@@ -4,3 +4,5 @@ LINES = const(6)
 
 
 KEYBOARD_DEBOUNCE_TIME_MS = const(150)
+
+CHAR_HEIGHT = const(8)

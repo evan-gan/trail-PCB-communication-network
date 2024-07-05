@@ -10,6 +10,7 @@ import keyboard
 import typewriter
 
 import ui.home
+import utime
 
 reset = True
 
@@ -19,6 +20,7 @@ async def main():
     Pin(16, Pin.OUT).high()
     # Waits for the power to stabilize before initializing the display
     await uasyncio.sleep(0.5)
+    # utime.sleep(0.5)
 
     SettingsStore = datastore.DataStore("settings")
 
@@ -74,6 +76,7 @@ async def main():
         ui_welcome_text_tw.start()
 
         await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui_continue_text = vcanvas.TextLabel(ui_welcome_screen, text="Press any key to continue...", text_size=1, text_color=1,
                                              ax=0, ay=0.5, position_type="scale", x=0.1, y=1 - (8/64))
@@ -81,6 +84,7 @@ async def main():
         ui_continue_text.text = "Press any key to continue..."
 
         await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui.home.UI_Home(_vcanvas)
     else:
@@ -89,7 +93,7 @@ async def main():
 
             print("Saved name to database")
 
-            ui_welcome_screen.destroy()
+            ui_welcome_text.destroy()
             ui.home.UI_Home(_vcanvas)
 
         ui_welcome_text_tw = typewriter.Typewriter(
@@ -113,10 +117,12 @@ async def main():
         ui_welcome_text_tw.start()
 
         await uasyncio.sleep(ui_welcome_text_tw.total_time + 2)
+        # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui_enter_name_tw.start()
 
         await uasyncio.sleep(ui_enter_name_tw.total_time + 3)
+        # utime.sleep(ui_enter_name_tw.total_time + 3)
 
         _keyboard.setFocus(ui_name_box)
 
@@ -135,6 +141,7 @@ async def main():
 
         while True:
             await uasyncio.sleep(1)
+            # utime.sleep(1)
 
             # print("Looping", utime.ticks_ms())
             Pin("LED", Pin.OUT).toggle()
@@ -145,6 +152,7 @@ async def main():
 
                 amogus = 0
 
-            # await uasyncio.sleep(2)
+        # await uasyncio.sleep(2)
+
 
 uasyncio.run(main())

@@ -77,6 +77,8 @@ class Display:
         return top_left_x, top_left_y
 
     def render_component(self, prop, parent_size, parent_position=[0, 0]):
+        # print("Render compoent", prop)
+
         if not prop.get("visible", True):
             return
 
