@@ -74,14 +74,13 @@ class Display:
 
         return top_left_x, top_left_y
 
-    def wrap_text_by_characters(self, text):
+    def wrap_text_by_characters(self, text, available_width):
         lines = []
-
         current_line = ""
         current_width = 0
 
         for char in text:
-            if current_width + CONSTS.CHAR_WIDTH <= CONSTS.DISPLAY_WIDTH:
+            if current_width + CONSTS.CHAR_WIDTH <= available_width:
                 current_line += char
                 current_width += CONSTS.CHAR_WIDTH
             else:
@@ -93,7 +92,7 @@ class Display:
         if current_line:
             lines.append(current_line)
 
-            return '\n'.join(lines)
+        return '\n'.join(lines)
 
     def render_component(self, prop, parent_size, parent_position=[0, 0]):
         # print("Render compoent", prop)
@@ -105,9 +104,7 @@ class Display:
 
         if class_name == "TextLabel" or class_name == "TextBox":
             position = prop["position"]
-
             text = prop["text"]
-
             text_size = prop["text_size"]
             text_color = prop["text_color"]
 
@@ -120,12 +117,20 @@ class Display:
             x += parent_position[0]
             y += parent_position[1]
 
-            wrapped_text = self.wrap_text_by_characters(text)
+            # Calculate available width for text
+            available_width = (CONSTS.DISPLAY_WIDTH - x -
+                               CONSTS.CHAR_WIDTH) - (5 * 4)  # Minus 4 characters
 
-            print(wrapped_text)
+            # Wrap text
+            wrapped_text = self.wrap_text_by_characters(text, available_width)
 
-            self.display.text(text, x,
-                              y, text_color, size=text_size)
+            print(wrapped_text, available_width, x)
+
+            # Render each line of wrapped text
+            for i, line in enumerate(wrapped_text.split('\n')):
+                self.display.text(" " + line, x,  # Add extra space in front
+                                  y + i * CONSTS.CHAR_HEIGHT * text_size,
+                                  text_color, size=text_size)
         elif class_name == "Frame":
             size = prop["size"]
             position = prop["position"]

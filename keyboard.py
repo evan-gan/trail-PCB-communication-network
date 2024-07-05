@@ -177,8 +177,11 @@ class Keyboard:
 
         if key:
             if self.focused_element:
-                self.focused_element.text += key[1 if self.SHIFT_PIN.value()
-                                                 == 0 else 0]
+                new_text = self.focused_element.text + \
+                    key[1 if self.SHIFT_PIN.value() == 0 else 0]
+
+                if len(new_text) <= self.focused_element.text_limit or self.focused_element.text_limit == -1:
+                    self.focused_element.text = new_text
             # else:
             #     self.onKeyPress(
             #         key[1 if self.SHIFT_PIN.value() == 0 else 0])

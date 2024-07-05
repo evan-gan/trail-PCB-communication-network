@@ -7,5 +7,3 @@ DISPLAY_HEIGHT = const(64)
 
 CHAR_HEIGHT = const(8)
 CHAR_WIDTH = const(5)
-
-CHAR_PER_LINE = const((DISPLAY_WIDTH // CHAR_WIDTH) - 4)  # should be 21

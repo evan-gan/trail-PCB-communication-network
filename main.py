@@ -12,7 +12,7 @@ import typewriter
 import ui.home
 import utime
 
-reset = False
+reset = True
 
 
 async def main():
@@ -63,12 +63,12 @@ async def main():
     ui_welcome_screen = vcanvas.Group(_vcanvas)
 
     ui_welcome_text = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                        ax=0, ay=0.5, position_type="scale", x=0.1, y=0.25)
+                                        ax=0, ay=0.5, position_type="scale", x=0.05, y=0.25)
 
     if name:
         ui_welcome_text_tw = typewriter.Typewriter(
             ui_welcome_text, [
-                "Welcome back, ",
+                "ddddWelcome back, ",
                 0.5,
                 f"{name}!",
             ])
@@ -79,7 +79,7 @@ async def main():
         # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui_continue_text = vcanvas.TextLabel(ui_welcome_screen, text="Press any key to continue...", text_size=1, text_color=1,
-                                             ax=0, ay=0.5, position_type="scale", x=0.1, y=1 - (8/64))
+                                             ax=0, ay=0.5, position_type="scale", x=0.05, y=1 - (8/64))
 
         ui_continue_text.text = "Press any key to continue..."
 
@@ -94,6 +94,8 @@ async def main():
             print("Saved name to database")
 
             ui_welcome_screen.destroy()
+            _keyboard.setFocus(None)
+
             ui.home.UI_Home(_vcanvas)
 
         ui_welcome_text_tw = typewriter.Typewriter(
@@ -104,15 +106,17 @@ async def main():
             ])
 
         ui_enter_name = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                          ax=0, ay=0.5, position_type="scale", x=0.1, y=0.45)
+                                          ax=0, ay=0.5, position_type="scale", x=0.05, y=0.45)
+
+        del ui_welcome_text
 
         ui_enter_name_tw = typewriter.Typewriter(
             ui_enter_name, [
                 "Enter your name: "
             ])
 
-        ui_name_box = vcanvas.TextBox(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                      ax=0, ay=0.5, position_type="scale", x=0.1, y=0.65, onEnter=lambda self: saveName(self.text))
+        ui_name_box = vcanvas.TextBox(ui_welcome_screen, text="", text_size=1, text_color=1, text_limit=19*3,
+                                      ax=0, ay=0.5, position_type="scale", x=0.05, y=0.65, onEnter=lambda self: saveName(self.text))
 
         ui_welcome_text_tw.start()
 

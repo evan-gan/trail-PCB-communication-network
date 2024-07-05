@@ -321,6 +321,7 @@ class TextBox(UIComponent):
             "editable": True,
             "text_size": 1,
             "text_color": 1,
+            "text_limit": -1,
             "onEnter": None  # Callback function to be called when Enter is pressed
         })
 
