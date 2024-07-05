@@ -1,7 +1,10 @@
 class HistoryManager:
     history:list[str] = []
-    MSG_Draft:str = ""
+    MSG_Draft:str = "Hi there!"
     scroll = 0
+
+    def __init__(self) -> None:
+        pass
 
     #For messages receved via lora
     def addMSG(self, MSG):
@@ -15,6 +18,10 @@ class HistoryManager:
 
     def deleteLastCharFromDraft(self):
         self.MSG_Draft = self.MSG_Draft
+
+    def draftSent(self):
+        self.addMSG(self.MSG_Draft)
+        self.MSG_Draft = ""
     
     #DO NOT TOUCH, NEEDED IN DISPLAY
     def getHistory(self):

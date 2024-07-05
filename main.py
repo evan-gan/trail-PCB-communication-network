@@ -26,7 +26,15 @@ class BOARD_MANAGER:
         self.display = display.Display(historyManager)
         #NOTE: Should figure out user ID system
         #NOTE: Make sure to use set draft & send for view updates to work
-        self.keyboard = keyboard.Keyboard(self.addLetterToDraft, self.sendMessage, self.backspace, self.display.scrollUp, self.display.scrollDown)
+        self.keyboard = keyboard.Keyboard(
+            lambda x: self.addLetterToDraft(x),
+            lambda: self.sendMessage(),
+            lambda: self.backspace(),
+            lambda: self.display.scrollUp(),
+            lambda: self.display.scrollDown()
+        )
+        
+        self.display.update()
         #Lambda format:
             #lambda param : <Any code>
 
@@ -34,7 +42,7 @@ class BOARD_MANAGER:
         #Loop can go here to keep the program running
         while True:
             utime.sleep(1)
-            print("Running!")
+            # print("Running!")
 
     #Functions that get passed as lambda's:
     def receivedMSG(self, MSG):
@@ -42,6 +50,8 @@ class BOARD_MANAGER:
         self.display.update()
 
     def sendMessage(self):
+        self.radio.sendMSG(myname + ":" + self.historyManager.getMSG_Draft())
+        self.historyManager.draftSent()
         self.display.update()
 
     def backspace(self):
