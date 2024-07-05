@@ -74,26 +74,26 @@ class Display:
 
         return top_left_x, top_left_y
 
-    def wrap_text(self, text, max_width):
-        words = text.split()
+    def wrap_text_by_characters(self, text):
         lines = []
-        current_line = []
+
+        current_line = ""
         current_width = 0
 
-        for word in words:
-            word_width = len(word) * CONSTS.CHAR_WIDTH
-            if current_width + word_width <= max_width:
-                current_line.append(word)
-                current_width += word_width + CONSTS.CHAR_WIDTH
+        for char in text:
+            if current_width + CONSTS.CHAR_WIDTH <= CONSTS.DISPLAY_WIDTH:
+                current_line += char
+                current_width += CONSTS.CHAR_WIDTH
             else:
-                lines.append(' '.join(current_line))
-                current_line = [word]
-                current_width = word_width + CONSTS.CHAR_WIDTH
+                lines.append(current_line)
+
+                current_line = char
+                current_width = CONSTS.CHAR_WIDTH
 
         if current_line:
-            lines.append(' '.join(current_line))
+            lines.append(current_line)
 
-        return '\n'.join(lines)
+            return '\n'.join(lines)
 
     def render_component(self, prop, parent_size, parent_position=[0, 0]):
         # print("Render compoent", prop)
@@ -120,6 +120,10 @@ class Display:
             x += parent_position[0]
             y += parent_position[1]
 
+            wrapped_text = self.wrap_text_by_characters(text)
+
+            print(wrapped_text)
+
             self.display.text(text, x,
                               y, text_color, size=text_size)
         elif class_name == "Frame":
@@ -145,7 +149,7 @@ class Display:
                         child_prop, parent_size, parent_position)
 
     def render(self, data):
-        print(data)
+        # print(data)
 
         self.display.fill(0)
 
