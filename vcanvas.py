@@ -37,6 +37,7 @@ class vCanvas:
         :param height: Height of the display in pixels.
         :param renderCb: Callback function that handles the actual rendering on the physical display.
         """
+
         self.display_width = width
         self.display_height = height
 
@@ -72,6 +73,7 @@ class vCanvas:
         :param key: Unique identifier of the component to update.
         :param data: New data for the component.
         """
+
         self.components[key] = data
 
         self._trigger_render()  # Mark canvas as dirty and schedule a render
@@ -82,6 +84,7 @@ class vCanvas:
         Schedule a render if one is not already pending.
         This method uses the dirty flag to prevent multiple render calls in quick succession.
         """
+
         if not self.dirty:
             self.dirty = True
             # Create an asynchronous task for rendering
@@ -94,6 +97,7 @@ class vCanvas:
         Asynchronous method to perform the actual render.
         This method yields control briefly to allow other tasks to run, then calls the render callback.
         """
+
         # await uasyncio.sleep(0)  # Yield control to allow other tasks to run
         if self.dirty:
             # Call the render callback with the current state of all components
@@ -109,6 +113,7 @@ class UIComponent:
         :param container: The parent container (usually vCanvas) this component belongs to.
         :param kwargs: Initial property values for the component.
         """
+
         self.key = utils.random_string(
             8)  # Generate a unique key for this component
 
@@ -133,6 +138,7 @@ class UIComponent:
         :return: Value of the property if it exists.
         :raises AttributeError: If the property doesn't exist.
         """
+
         if name in self.properties:
             return self.properties[name]
         raise AttributeError(
@@ -145,6 +151,7 @@ class UIComponent:
         :param name: Name of the attribute being set.
         :param value: New value for the attribute.
         """
+
         if name in ['key', 'container', 'children', 'properties']:
             super().__setattr__(name, value)  # Use default behavior for these attributes
         else:
@@ -169,6 +176,7 @@ class UIComponent:
 
         :param new_properties: Dictionary of property names and their new values.
         """
+
         changed = False
 
         for key, value in new_properties.items():
@@ -203,6 +211,7 @@ class UIComponent:
         Prepare component data and update the container.
         This method is called whenever the component's state changes.
         """
+
         data = self.properties.copy()
 
         # Format position data
@@ -248,6 +257,7 @@ class Frame(UIComponent):
         :param container: The parent container this frame belongs to.
         :param kwargs: Additional properties for the frame.
         """
+
         super().__init__(container, **kwargs)
 
         self.properties.update({
@@ -269,6 +279,7 @@ class TextLabel(UIComponent):
         :param container: The parent container this label belongs to.
         :param kwargs: Additional properties for the text label.
         """
+
         super().__init__(container, **kwargs)
 
         self.properties.update({
@@ -289,6 +300,7 @@ class TextBox(UIComponent):
         :param container: The parent container this text box belongs to.
         :param kwargs: Additional properties for the text box.
         """
+
         super().__init__(container, **kwargs)
 
         self.properties.update({
@@ -301,15 +313,3 @@ class TextBox(UIComponent):
 
         # Apply any text box-specific properties passed in kwargs
         self.update_properties(kwargs)
-
-
-# - root
-#    - group1
-#        -label1
-#         -label2
-#         -group2
-#            -label3
-#             -label4
-#     - group3
-#         -label5
-#         -label6
