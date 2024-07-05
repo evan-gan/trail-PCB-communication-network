@@ -1,8 +1,11 @@
-# Settings/constants for OLED display:
-CHAR_PER_LINE = const(16)  # Old was 21, should change font back later
-LINES = const(6)
-
+# LINES = const(6)
 
 KEYBOARD_DEBOUNCE_TIME_MS = const(150)
 
+DISPLAY_WIDTH = const(128)
+DISPLAY_HEIGHT = const(64)
+
 CHAR_HEIGHT = const(8)
+CHAR_WIDTH = const(5)
+
+CHAR_PER_LINE = const(DISPLAY_WIDTH // CHAR_WIDTH)

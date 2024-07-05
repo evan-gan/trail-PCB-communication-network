@@ -12,7 +12,7 @@ import typewriter
 import ui.home
 import utime
 
-reset = True
+reset = False
 
 
 async def main():
@@ -93,7 +93,7 @@ async def main():
 
             print("Saved name to database")
 
-            ui_welcome_text.destroy()
+            ui_welcome_screen.destroy()
             ui.home.UI_Home(_vcanvas)
 
         ui_welcome_text_tw = typewriter.Typewriter(

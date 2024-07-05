@@ -47,9 +47,6 @@ class vCanvas:
         # Dictionary to store all UI components, keyed by their unique identifiers
         self.components = {}
 
-        # References to all active components
-        self.componentsList = {}
-
         self.dirty = False  # Flag to indicate if the canvas needs redrawing
 
     def destroy(self, key):
@@ -59,12 +56,28 @@ class vCanvas:
 
         :param key: Unique identifier of the component to remove.
         """
-        # We can either do recursion to find the component and del it
-        # or we can build a minimal tree of the components
-        # then search the location like id1.id2.id3 then  we can del  it like
-        # del self.components["id1"]["id2"]["id3"]
-        # then we can trigger a render
-        # self._trigger_render()
+        # Recurse until we find a match and del it
+        def recurse_remove(components, key):
+            """
+            Recursively search and remove a component from the components dictionary.
+
+            :param components: Dictionary of components to search through.
+            :param key: Unique identifier of the component to remove.
+            :return: True if the component was found and removed, False otherwise.
+            """
+            if key in components:
+                del components[key]
+                return True
+
+            for component in components.values():
+                if "children" in component:
+                    if recurse_remove(component["children"], key):
+                        return True
+
+            return False
+
+        recurse_remove(self.components, key)
+        self._trigger_render()  # Mark canvas as dirty and schedule a render
 
     def update(self, key, data):
         """

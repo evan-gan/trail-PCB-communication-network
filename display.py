@@ -3,6 +3,7 @@ import utime
 import math
 import uasyncio
 from lib.ssd1306 import SSD1306_I2C
+import CONSTS
 
 
 class Display:
@@ -19,12 +20,9 @@ class Display:
         self.display.show()
 
     def calculate_text_position(self, text, parent_size, parent_position, position, text_size):
-        char_width = 5
-        char_height = 8
-
         text_width = max(len(line)
-                         for line in text.split("\n")) * char_width * text_size
-        text_height = len(text.split("\n")) * char_height * text_size
+                         for line in text.split("\n")) * CONSTS.CHAR_WIDTH * text_size
+        text_height = len(text.split("\n")) * CONSTS.CHAR_HEIGHT * text_size
 
         pos_x, pos_y, ax, ay, pos_type = position["x"], position[
             "y"], position["ax"], position["ay"], position["type"]
@@ -75,6 +73,27 @@ class Display:
             top_left_y += parent_position[1]
 
         return top_left_x, top_left_y
+
+    def wrap_text(self, text, max_width):
+        words = text.split()
+        lines = []
+        current_line = []
+        current_width = 0
+
+        for word in words:
+            word_width = len(word) * CONSTS.CHAR_WIDTH
+            if current_width + word_width <= max_width:
+                current_line.append(word)
+                current_width += word_width + CONSTS.CHAR_WIDTH
+            else:
+                lines.append(' '.join(current_line))
+                current_line = [word]
+                current_width = word_width + CONSTS.CHAR_WIDTH
+
+        if current_line:
+            lines.append(' '.join(current_line))
+
+        return '\n'.join(lines)
 
     def render_component(self, prop, parent_size, parent_position=[0, 0]):
         # print("Render compoent", prop)
