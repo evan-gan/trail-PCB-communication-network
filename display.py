@@ -9,7 +9,6 @@ from historyManager import HistoryManager
 #
 class Display:
     #Scroll stores the line that is being viewed (aka the line that is at the top)
-    scroll = 0
 
     def __init__(self, historyManager):
         utime.sleep(0.5)
@@ -17,6 +16,8 @@ class Display:
         #Display initilisation
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
         self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c)
+
+        self.scroll = 0
 
     def linesForMessage(self,MSG):
         MESSAGE_LENGTH:int = len(MSG)
@@ -39,11 +40,19 @@ class Display:
             lineBroken += self.splitMessageIntoLines(text)
         return lineBroken
 
+    def scrollUp(self):
+        self.scroll += 1
+        self.update()
+
+    def scrollDown(self):
+        if (self.scroll > 0):
+            self.scroll -= 1
+            self.update()
 #
 #   Display interactions:
 #
     def writeToLine(self,line, text):
-        LINE_OFFSET = 10
+        LINE_OFFSET = CONSTS.CHAR_HEIGHT + 1
         self.display.text(text, 0, LINE_OFFSET*line)
 
     def clearDisplay(self):
@@ -52,12 +61,13 @@ class Display:
     def showDisplay(self):
         self.display.show()
 
-    def updateDisplay(self):
+    #TODO: Double check scroll limiting
+    def update(self):
         self.clearDisplay()
         stuffToDisplay = self.getLatestMessagesAsLines()
         length = len(stuffToDisplay)
         index = 0
-        while ((index+self.scroll) < length and index < self.scroll+CONSTS.LINES):
+        while ((index+self.scroll) < length and index < self.scroll+CONSTS.LINES and self.scroll >= 0):
             self.writeToLine(index, stuffToDisplay[index+self.scroll])
             index += 1
         self.showDisplay()

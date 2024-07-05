@@ -2,23 +2,62 @@ from machine import Pin, I2C
 import utime, math
 import radio, display, keyboard, historyManager
 
-TRANSISTOR_PIN = 16
-transistor = Pin(TRANSISTOR_PIN, Pin.OUT)
-transistor.high()
-utime.sleep(0.5)
+#Stuff to get unique ID
+import binascii
+import hashlib
 
-def receivedMSG(historyManager, MSG):
-    global history
-    m_historyManager.addMSG(MSG)
-    m_display.updateDisplay()
+
+# user_id = user_id = binascii.hexlify(hashlib.sha1(
+#             unique_id()).digest()).decode("utf-8")[:4]
 
 myname = "Board 1"
-sendname = "Board 2"
 
-m_radio = radio.Radio(lambda x : receivedMSG(m_historyManager, x))
-m_historyManager = historyManager.HistoryManager()
-m_display = display.Display(m_historyManager)
-m_keyboard = keyboard.Keyboard(lambda x : m_radio.sendMSG(x, myname, sendname))
+class BOARD_MANAGER:
+    def __init__(self):
+        #INIT DISPLAY
+        TRANSISTOR_PIN = 16
+        transistor = Pin(TRANSISTOR_PIN, Pin.OUT)
+        transistor.high()
+        utime.sleep(0.5)
+
+
+        self.radio = radio.Radio(self.receivedMSG)
+        self.historyManager = historyManager.HistoryManager()
+        self.display = display.Display(historyManager)
+        #NOTE: Should figure out user ID system
+        #NOTE: Make sure to use set draft & send for view updates to work
+        self.keyboard = keyboard.Keyboard(self.addLetterToDraft, self.sendMessage, self.backspace, self.display.scrollUp, self.display.scrollDown)
+        #Lambda format:
+            #lambda param : <Any code>
+
+    def run(self):
+        #Loop can go here to keep the program running
+        while True:
+            utime.sleep(1)
+            print("Running!")
+
+    #Functions that get passed as lambda's:
+    def receivedMSG(self, MSG):
+        self.historyManager.addMSG(MSG)
+        self.display.update()
+
+    def sendMessage(self):
+        self.display.update()
+
+    def backspace(self):
+        self.historyManager.deleteLastCharFromDraft()
+        self.display.update()
+
+    def addLetterToDraft(self, char):
+        self.historyManager.appendToDraft(char)
+        self.display.update()
+
+
+
+
+
+
+
 
 
 
@@ -46,3 +85,6 @@ m_keyboard = keyboard.Keyboard(lambda x : m_radio.sendMSG(x, myname, sendname))
 # # history.append("J101: Hello E404!")
 # # history.append("Me: Lets meet at the camp")
 # # history.append("J101: Ok, let me walk back over the hill")
+    
+board = BOARD_MANAGER()
+board.run()

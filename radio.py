@@ -24,6 +24,6 @@ class Radio:
             print('done transmitting')
         pass
     
-    def sendMSG(self, msg, frm, to): # frm = from
+    def sendMSG(self, msg): # frm = from
         # sx.send(bytes(f"{frm}|{to}|{msg}", 'utf-8'))
-        self.sx.send(bytes(f"{frm}: {msg}", 'utf-8'))
+        self.sx.send(bytes(msg, 'utf-8'))
