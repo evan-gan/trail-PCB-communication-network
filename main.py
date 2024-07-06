@@ -23,7 +23,7 @@ class BOARD_MANAGER:
 
         self.radio = radio.Radio(self.receivedMSG)
         self.historyManager = historyManager.HistoryManager()
-        self.display = display.Display(historyManager)
+        self.display = display.Display(self.historyManager)
         #NOTE: Should figure out user ID system
         #NOTE: Make sure to use set draft & send for view updates to work
         self.keyboard = keyboard.Keyboard(
@@ -33,7 +33,7 @@ class BOARD_MANAGER:
             lambda: self.display.scrollUp(),
             lambda: self.display.scrollDown()
         )
-        
+
         self.display.update()
         #Lambda format:
             #lambda param : <Any code>
@@ -50,8 +50,10 @@ class BOARD_MANAGER:
         self.display.update()
 
     def sendMessage(self):
-        self.radio.sendMSG(myname + ":" + self.historyManager.getMSG_Draft())
-        self.historyManager.draftSent()
+        msg = myname + ":" + self.historyManager.getMSG_Draft()
+        self.radio.sendMSG(msg)
+        self.historyManager.addMSG(msg)
+        self.historyManager.setMSG_Draft("")
         self.display.update()
 
     def backspace(self):
