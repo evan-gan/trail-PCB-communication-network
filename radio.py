@@ -18,7 +18,7 @@ class Radio:
             print('Received {}, {}'.format(msg, error))
             if error == "ERR_NONE":
                 # if msg[1] == myname: # this line will only work once changing name is implemented
-                self.receivedMSG(str(msg))
+                self.receivedMSG(msg)
 
         elif events & SX1262.TX_DONE:
             print('done transmitting')

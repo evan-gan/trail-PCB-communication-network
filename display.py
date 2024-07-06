@@ -11,7 +11,7 @@ class Display:
     #Scroll stores the line that is being viewed (aka the line that is at the top)
 
     def __init__(self, historyManager):
-        utime.sleep(0.5)
+        # utime.sleep(0.5)
         self.historyManager:HistoryManager = historyManager
         #Display initilisation
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
@@ -35,7 +35,7 @@ class Display:
 
     #Gets all messages (including the draft) as a format that could be printed
     def getLatestMessagesAsLines(self) -> list[str]:
-        lineBroken:list[str] = self.splitMessageIntoLines(self.historyManager.getMSG_Draft())
+        lineBroken:list[str] = self.splitMessageIntoLines(self.historyManager.getMSG_Draft() or "Type to start...")
         for text in reversed(self.historyManager.getHistory()):
             lineBroken += self.splitMessageIntoLines(text)
         return lineBroken

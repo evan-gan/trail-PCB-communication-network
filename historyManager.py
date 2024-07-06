@@ -1,8 +1,8 @@
 class HistoryManager:
     history:list[str] = []
-    MSG_Draft:str = "Hi there!"
+    MSG_Draft:str = ""
     scroll = 0
-
+    
     def __init__(self) -> None:
         pass
 
@@ -17,7 +17,7 @@ class HistoryManager:
         self.MSG_Draft += char
 
     def deleteLastCharFromDraft(self):
-        self.MSG_Draft = self.MSG_Draft
+        self.MSG_Draft = self.MSG_Draft[:-1]
 
     def draftSent(self):
         self.addMSG(self.MSG_Draft)
