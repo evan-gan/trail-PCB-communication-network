@@ -6,9 +6,11 @@ import radio, display, keyboard, historyManager
 import binascii
 import hashlib
 
-
-# user_id = user_id = binascii.hexlify(hashlib.sha1(
-#             unique_id()).digest()).decode("utf-8")[:4]
+#TODO:
+    # Move name to history manager
+    # Setup name getter system
+    # Implement store & Restore into histrory manager and have it call the get name workflow if needed
+    # Add json send/receve on lora radio - Package everything into a json?
 
 myname = "Board 1"
 
