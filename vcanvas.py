@@ -355,6 +355,5 @@ class TextButton(UIComponent):
             "onActivate": None  # Callback function to be called when the button is pressed
         })
 
-
         # Apply any button-specific properties passed in kwargs
         self.update_properties(kwargs)
