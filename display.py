@@ -120,7 +120,6 @@ class Display:
             # Calculate available width for text
             available_width = (CONSTS.DISPLAY_WIDTH - x -
                                CONSTS.CHAR_WIDTH) - (5 * 4)  # Minus 4 characters
-
             # Wrap text
             wrapped_text = self.wrap_text(text, available_width)
             wrapped_lines_num = len(wrapped_text.split('\n'))
@@ -129,11 +128,14 @@ class Display:
                 y = self.display_height - \
                     (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size)
 
-            # Render each line of wrapped text
-            for i, line in enumerate(wrapped_text.split('\n')):
-                self.display.text(line, x,
-                                  y + i * CONSTS.CHAR_HEIGHT * text_size,
-                                  text_color, size=text_size)
+            # # Render each line of wrapped text
+            # for i, line in enumerate(wrapped_text.split('\n')):
+            #     self.display.text(line, x,
+            #                       y + i * CONSTS.CHAR_HEIGHT * text_size,
+            #                       text_color, size=text_size)
+
+            # Render wrapped text with \n
+            self.display.text(wrapped_text, x, y, text_color, size=text_size)
         elif class_name == "Frame":
             size = prop["size"]
             position = prop["position"]
