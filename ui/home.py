@@ -11,7 +11,8 @@ class UI_Home:
         self._radio = _radio
 
     async def start(self):
-        ui_menu = vcanvas.Group(self._vcanvas)
+        ui_menu = vcanvas.Frame(self._vcanvas, width=1,
+                                height=1, size_type="scale", border=False)
 
         ui_settings = vcanvas.TextButton(
-            ui_sidebar, text="Settings", onActivate=print)
+            ui_menu, text="Settings", onActivate=print)

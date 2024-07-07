@@ -140,11 +140,6 @@ class UIComponent:
             "position_type": "offset"
         }
 
-        print("AMOGUS BAKA")
-
-        # Set initial properties based on kwargs
-        # self.update_properties(kwargs)
-
     def __getattr__(self, name):
         """
         Allow attribute-style access to properties.
@@ -348,11 +343,17 @@ class TextButton(UIComponent):
         super().__init__(container, **kwargs)
 
         self.properties.update({
+            "size_type": "offset",
+            "width": 10,
+            "height": 10,
+            "fill": False,
+            "border": True,
+
             "text": "",
             "enabled": True,
             "text_size": 1,
             "text_color": 1,
-            "onActivate": None  # Callback function to be called when the button is pressed
+            "onActivate": None,  # Callback function to be called when the button is pressed
         })
 
         # Apply any button-specific properties passed in kwargs
