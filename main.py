@@ -9,7 +9,7 @@ import display
 import keyboard
 import typewriter
 
-import ui.home
+import ui.greet
 import utime
 
 reset = True
@@ -68,7 +68,7 @@ async def main():
     if name:
         ui_welcome_label_tw = typewriter.Typewriter(
             ui_welcome_label, [
-                "ddddWelcome back, ",
+                "Welcome back, ",
                 0.5,
                 f"{name}!",
             ])
@@ -86,7 +86,7 @@ async def main():
         await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
         # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
-        ui.home.UI_Home(_vcanvas, name)
+        ui.greet.UI_Greet(_vcanvas, False)
     else:
         def saveName(name):
             SettingsStore.add("name", name)
@@ -97,7 +97,7 @@ async def main():
 
             _keyboard.setFocus(None)
 
-            res = ui.home.UI_Home(_vcanvas, name)
+            res = ui.greet.UI_Greet(_vcanvas, True)
 
             uasyncio.create_task(res.start())
 

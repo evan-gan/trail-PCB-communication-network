@@ -7,7 +7,7 @@
     "python.analysis.extraPaths": [
         "",
         "/Users/iunstable0/.cursor/extensions/joedevivo.vscode-circuitpython-0.2.0-darwin-arm64/stubs",
-        "/Users/iunstable0/Library/Application Support/Cursor/User/globalStorage/joedevivo.vscode-circuitpython/bundle/20240704/adafruit-circuitpython-bundle-py-20240704/lib",
+        "/Users/iunstable0/Library/Application Support/Cursor/User/globalStorage/joedevivo.vscode-circuitpython/bundle/20240707/adafruit-circuitpython-bundle-py-20240707/lib",
         "~/.micropico-stubs/included"
     ],
     "circuitpython.board.version": null,
