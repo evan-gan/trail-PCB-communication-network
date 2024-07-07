@@ -5,9 +5,10 @@ import typewriter
 
 
 class UI_Greet:
-    def __init__(self, _vcanvas, first_time):
+    def __init__(self, _vcanvas, first_time, name):
         self._vcanvas = _vcanvas
         self.first_time = first_time
+        self.name = name
 
     async def start(self):
         ui_greeting_screen = vcanvas.Group(self._vcanvas)

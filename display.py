@@ -37,6 +37,12 @@ class Display:
         top_left_x = int(ref_pos_x - (ax * text_width))
         top_left_y = int(ref_pos_y - (ay * text_height))
 
+        # offset to the left a bit cuz the display is weird
+        top_left_x = top_left_x - (2 * text_size)
+
+        top_left_x += parent_position[0]
+        top_left_y += parent_position[1]
+
         return top_left_x, top_left_y
 
     def calculate_size(self, parent_size, size):
@@ -74,7 +80,7 @@ class Display:
 
         return top_left_x, top_left_y
 
-    def wrap_text_by_characters(self, text, available_width):
+    def wrap_text(self, text, available_width):
         lines = []
         current_line = ""
         current_width = 0
@@ -111,24 +117,21 @@ class Display:
             x, y = self.calculate_text_position(
                 text, parent_size, parent_position, position, text_size)
 
-            # offset to the left a bit cuz the display is weird
-            x = x - (2 * text_size)
-
-            x += parent_position[0]
-            y += parent_position[1]
-
             # Calculate available width for text
             available_width = (CONSTS.DISPLAY_WIDTH - x -
                                CONSTS.CHAR_WIDTH) - (5 * 4)  # Minus 4 characters
 
             # Wrap text
-            wrapped_text = self.wrap_text_by_characters(text, available_width)
+            wrapped_text = self.wrap_text(text, available_width)
+            wrapped_lines_num = len(wrapped_text.split('\n'))
 
-            # print(wrapped_text, available_width, x)
+            if y + (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size) > self.display_height:
+                y = self.display_height - \
+                    (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size)
 
             # Render each line of wrapped text
             for i, line in enumerate(wrapped_text.split('\n')):
-                self.display.text(" " + line, x,  # Add extra space in front
+                self.display.text(line, x,
                                   y + i * CONSTS.CHAR_HEIGHT * text_size,
                                   text_color, size=text_size)
         elif class_name == "Frame":

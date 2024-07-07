@@ -12,7 +12,7 @@ import typewriter
 import ui.greet
 import utime
 
-reset = True
+reset = False
 
 
 async def main():
@@ -63,7 +63,7 @@ async def main():
     ui_welcome_screen = vcanvas.Group(_vcanvas)
 
     ui_welcome_label = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                         ax=0, ay=0.5, position_type="scale", x=0.05, y=0.25)
+                                         ax=0, ay=0.5, position_type="scale", x=0.05, y=0.2)
 
     if name:
         ui_welcome_label_tw = typewriter.Typewriter(
@@ -86,7 +86,7 @@ async def main():
         await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
         # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
-        ui.greet.UI_Greet(_vcanvas, False)
+        ui.greet.UI_Greet(_vcanvas, False, name)
     else:
         def saveName(name):
             SettingsStore.add("name", name)
@@ -97,7 +97,7 @@ async def main():
 
             _keyboard.setFocus(None)
 
-            res = ui.greet.UI_Greet(_vcanvas, True)
+            res = ui.greet.UI_Greet(_vcanvas, True, name)
 
             uasyncio.create_task(res.start())
 
@@ -109,7 +109,7 @@ async def main():
             ])
 
         ui_enter_name_label = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
-                                                ax=0, ay=0.5, position_type="scale", x=0.05, y=0.45)
+                                                ax=0, ay=0.5, position_type="scale", x=0.05, y=0.4)
 
         ui_enter_name_label_tw = typewriter.Typewriter(
             ui_enter_name_label, [
@@ -117,7 +117,7 @@ async def main():
             ])
 
         ui_name_box = vcanvas.TextBox(ui_welcome_screen, text="", text_size=1, text_color=1, text_limit=19*3,
-                                      ax=0, ay=0.5, position_type="scale", x=0.05, y=0.65, onEnter=lambda self: saveName(self.text))
+                                      ax=0, ay=0.5, position_type="scale", x=0.05, y=0.6, onEnter=lambda self: saveName(self.text))
 
         ui_welcome_label_tw.start()
 
