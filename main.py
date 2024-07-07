@@ -5,9 +5,10 @@ import binascii
 
 import datastore
 import vcanvas
+import typewriter
 import display
 import keyboard
-import typewriter
+import radio
 
 import ui.greet
 import utime
@@ -44,7 +45,7 @@ async def main():
     _display = display.Display(display_width, display_height)
 
     _vcanvas = vcanvas.vCanvas(
-        display_width, display_height, lambda data: _display.render(data))
+        display_width, display_height, _display.render)
 
     _keyboard = keyboard.Keyboard(lambda key: dummyFunc(key),
                                   lambda: dummyFunc(""),
@@ -52,6 +53,8 @@ async def main():
                                   lambda: dummyFunc(""),
                                   lambda: dummyFunc(""),
                                   )
+
+    # _radio = radio.Radio()
 
     def dummyFunc(key):
         pass
@@ -66,6 +69,9 @@ async def main():
                                          ax=0, ay=0.5, position_type="scale", x=0.05, y=0.2)
 
     if name:
+        def homePage():
+            ui_welcome_screen.destroy()
+
         ui_welcome_label_tw = typewriter.Typewriter(
             ui_welcome_label, [
                 "Welcome back, ",
@@ -76,20 +82,16 @@ async def main():
         ui_welcome_label_tw.start()
 
         await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
-        # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui_continue_text = vcanvas.TextLabel(ui_welcome_screen, text="Press any key to continue...", text_size=1, text_color=1,
                                              ax=0, ay=0.5, position_type="scale", x=0.05, y=1 - (8/64))
 
         ui_continue_text.text = "Press any key to continue..."
 
-        await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
-        # utime.sleep(ui_welcome_text_tw.total_time + 2)
-
-        ui.greet.UI_Greet(_vcanvas, False, name)
+        _keyboard.onceKeyPress("", homePage)
     else:
-        def saveName(name):
-            SettingsStore.add("name", name)
+        def saveName(self):
+            SettingsStore.add("name", self.text)
 
             print("Saved name to database")
 
@@ -97,9 +99,9 @@ async def main():
 
             _keyboard.setFocus(None)
 
-            res = ui.greet.UI_Greet(_vcanvas, True, name)
+            ui_greet = ui.greet.UI_Greet(_vcanvas, self.text)
 
-            uasyncio.create_task(res.start())
+            uasyncio.create_task(ui_greet.start())
 
         ui_welcome_label_tw = typewriter.Typewriter(
             ui_welcome_label, [
@@ -117,30 +119,17 @@ async def main():
             ])
 
         ui_name_box = vcanvas.TextBox(ui_welcome_screen, text="", text_size=1, text_color=1, text_limit=19*3,
-                                      ax=0, ay=0.5, position_type="scale", x=0.05, y=0.6, onEnter=lambda self: saveName(self.text))
+                                      ax=0, ay=0.5, position_type="scale", x=0.05, y=0.6, onEnter=saveName)
 
         ui_welcome_label_tw.start()
 
         await uasyncio.sleep(ui_welcome_label_tw.total_time + 2)
-        # utime.sleep(ui_welcome_text_tw.total_time + 2)
 
         ui_enter_name_label_tw.start()
 
         await uasyncio.sleep(ui_enter_name_label_tw.total_time + 3)
-        # utime.sleep(ui_enter_name_tw.total_time + 3)
 
         _keyboard.setFocus(ui_name_box)
-
-        # def update(stuff):
-        #     label.text += stuff
-
-        # def dele():
-        #     if label.text:
-        #         label.text = label.text[:-1]
-
-        # _keyboard = user_input.Keyboard(lambda key: update(key),
-        #                               lambda: update("\n"),
-        #                               lambda: dele())
 
         amogus = 0
 

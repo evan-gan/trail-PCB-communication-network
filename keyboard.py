@@ -109,6 +109,8 @@ class Keyboard:
 
     keys_cooldown = {}
 
+    one_time_callbacks = {}
+
     def __init__(self, onKeyPress, onLeft, onUp, onRight, onDown):
         self.onKeyPress = onKeyPress
 
@@ -134,6 +136,9 @@ class Keyboard:
 
         self.last_press_time = 0
 
+    def onceKeyPress(self, key, cb):
+        self.one_time_callbacks[key] = cb
+
     def checkKeyCooldown(self, RowCol):
         current_time = utime.ticks_ms()
 
@@ -152,6 +157,13 @@ class Keyboard:
             self.keys_cooldown[RowCol] = utime.ticks_ms()
         else:
             return
+
+        if "" in self.one_time_callbacks:
+            self.one_time_callbacks[""]()
+            del self.one_time_callbacks[""]
+        elif RowCol in self.one_time_callbacks:
+            self.one_time_callbacks[RowCol]()
+            del self.one_time_callbacks[RowCol]
 
         # print(f"{RowCol} was pressed!")
 

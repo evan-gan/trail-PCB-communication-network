@@ -5,9 +5,8 @@ import typewriter
 
 
 class UI_Greet:
-    def __init__(self, _vcanvas, first_time, name):
+    def __init__(self, _vcanvas, name):
         self._vcanvas = _vcanvas
-        self.first_time = first_time
         self.name = name
 
     async def start(self):
@@ -19,7 +18,7 @@ class UI_Greet:
         ui_greeting_label_tw = typewriter.Typewriter(
             ui_greeting_label, [
                 # Extra space so the name wrap to the second line
-                "Nice to meet you,  " if self.first_time else "Welcome back, ",
+                "Nice to meet you,  ",
                 0.5,
                 f"{self.name}!",
             ])
@@ -27,3 +26,5 @@ class UI_Greet:
         ui_greeting_label_tw.start()
 
         await uasyncio.sleep(ui_greeting_label_tw.total_time + 2)
+
+        
