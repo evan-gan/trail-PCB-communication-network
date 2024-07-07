@@ -145,8 +145,11 @@ class Display:
                 parent_size, parent_position, size, position)
 
             fill = prop["fill"]
+            border = prop["border"]
 
-            self.display.rect(pos_x,  pos_y, width, height, 1, fill=fill)
+            if border:
+                self.display.rect(pos_x,  pos_y, width, height,
+                                  1, fill=fill)
 
             if "children" in prop:
                 for child_key, child_prop in prop["children"].items():

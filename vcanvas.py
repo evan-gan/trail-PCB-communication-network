@@ -140,8 +140,10 @@ class UIComponent:
             "position_type": "offset"
         }
 
+        print("AMOGUS BAKA")
+
         # Set initial properties based on kwargs
-        self.update_properties(kwargs)
+        # self.update_properties(kwargs)
 
     def __getattr__(self, name):
         """
@@ -151,6 +153,8 @@ class UIComponent:
         :return: Value of the property if it exists.
         :raises AttributeError: If the property doesn't exist.
         """
+
+        print("Getting ", name)
 
         if name in self.properties:
             return self.properties[name]
@@ -189,6 +193,8 @@ class UIComponent:
 
         :param new_properties: Dictionary of property names and their new values.
         """
+
+        print("UPDATE PROPERTIES", new_properties)
 
         changed = False
 
@@ -277,7 +283,8 @@ class Frame(UIComponent):
             "size_type": "offset",
             "width": 10,
             "height": 10,
-            "fill": False
+            "fill": False,
+            "border": True
         })
 
         # Apply any frame-specific properties passed in kwargs
@@ -326,4 +333,28 @@ class TextBox(UIComponent):
         })
 
         # Apply any text box-specific properties passed in kwargs
+        self.update_properties(kwargs)
+
+
+class TextButton(UIComponent):
+    def __init__(self, container, **kwargs):
+        """
+        Initialize a TextButton component.
+
+        :param container: The parent container this button belongs to.
+        :param kwargs: Additional properties for the text button.
+        """
+
+        super().__init__(container, **kwargs)
+
+        self.properties.update({
+            "text": "",
+            "enabled": True,
+            "text_size": 1,
+            "text_color": 1,
+            "onActivate": None  # Callback function to be called when the button is pressed
+        })
+
+
+        # Apply any button-specific properties passed in kwargs
         self.update_properties(kwargs)

@@ -7,3 +7,5 @@ DISPLAY_HEIGHT = const(64)
 
 CHAR_HEIGHT = const(8)
 CHAR_WIDTH = const(5)
+
+MAX_MESSAGES_PER_CHANNEL = const(20)

@@ -11,6 +11,8 @@ import keyboard
 import radio
 
 import ui.greet
+import ui.home
+
 import utime
 
 reset = False
@@ -54,7 +56,7 @@ async def main():
                                   lambda: dummyFunc(""),
                                   )
 
-    # _radio = radio.Radio()
+    _radio = radio.Radio()
 
     def dummyFunc(key):
         pass
@@ -63,7 +65,8 @@ async def main():
 
     name = SettingsStore.get("name")
 
-    ui_welcome_screen = vcanvas.Group(_vcanvas)
+    ui_welcome_screen = vcanvas.Frame(
+        _vcanvas, width=1, height=1, size_type="scale", border=False)
 
     ui_welcome_label = vcanvas.TextLabel(ui_welcome_screen, text="", text_size=1, text_color=1,
                                          ax=0, ay=0.5, position_type="scale", x=0.05, y=0.2)
@@ -71,6 +74,13 @@ async def main():
     if name:
         def homePage():
             ui_welcome_screen.destroy()
+
+            ui_home = ui.home.UI_Home(_vcanvas, _keyboard, _display, _radio)
+
+            # ui_home.start()
+            print("Startie")
+
+            uasyncio.create_task(ui_home.start())
 
         ui_welcome_label_tw = typewriter.Typewriter(
             ui_welcome_label, [
@@ -99,7 +109,8 @@ async def main():
 
             _keyboard.setFocus(None)
 
-            ui_greet = ui.greet.UI_Greet(_vcanvas, self.text)
+            ui_greet = ui.greet.UI_Greet(
+                _vcanvas, _keyboard, _display, _radio, self.text)
 
             uasyncio.create_task(ui_greet.start())
 
@@ -131,20 +142,20 @@ async def main():
 
         _keyboard.setFocus(ui_name_box)
 
-        amogus = 0
+    amogus = 0
 
-        while True:
-            await uasyncio.sleep(1)
-            # utime.sleep(1)
+    while True:
+        await uasyncio.sleep(1)
+        # utime.sleep(1)
 
-            # print("Looping", utime.ticks_ms())
-            Pin("LED", Pin.OUT).toggle()
+        # print("Looping", utime.ticks_ms())
+        Pin("LED", Pin.OUT).toggle()
 
-            if amogus == 0:
-                amogus = 1
-            elif amogus == 1:
+        if amogus == 0:
+            amogus = 1
+        elif amogus == 1:
 
-                amogus = 0
+            amogus = 0
 
         # await uasyncio.sleep(2)
 

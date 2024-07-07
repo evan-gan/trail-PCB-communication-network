@@ -3,7 +3,7 @@ import json
 
 
 class Radio:
-    def __init__(self, receivedMSG):
+    def __init__(self):
         self.sx = SX1262(spi_bus=1, clk=10, mosi=11, miso=12,
                          cs=3, irq=20, rst=15, gpio=2)
 
@@ -14,22 +14,24 @@ class Radio:
                       crcOn=True, txIq=False, rxIq=False,
                       tcxoVoltage=0, useRegulatorLDO=False, blocking=True)
 
-        self.receivedMSG = receivedMSG
-        self.sx.setBlockingCallback(False, self.cb)
+        self.sx.setBlockingCallback(False, self.onReceive)
 
-    def cb(self, events):
+        self.received_messages = []
+
+    def onReceive(self, events):
         if events & SX1262.RX_DONE:
-            msg, err = self.sx.recv()
-            error = SX1262.STATUS[err]
-            print('Received {}, {}'.format(msg, error))
-            if error == "ERR_NONE":
-                # if msg[1] == myname: # this line will only work once changing name is implemented
-                msgdict = json.loads(msg.decode("utf-8"))
-                self.receivedMSG(msgdict)
+            message, error = self.sx.recv()
 
+            error = SX1262.STATUS[error]
+
+            print('Received {}, {}'.format(message, error))
+
+            if error == "ERR_NONE":
+                message_dict = json.loads(message.decode("utf-8"))
+                self.received_messages.append(message_dict)
         elif events & SX1262.TX_DONE:
             print('done transmitting')
         pass
 
-    def sendMSG(self, msg):  # frm = from
-        self.sx.send(json.dumps(msg).encode("utf-8"))
+    def sendMSG(self, message):
+        self.sx.send(json.dumps(message).encode("utf-8"))
