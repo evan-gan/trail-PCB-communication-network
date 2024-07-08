@@ -7,12 +7,11 @@ import binascii
 import hashlib
 
 #TODO:
-    # Move name to history manager
-    # Setup name getter system
-    # Implement store & Restore into histrory manager and have it call the get name workflow if needed
+    # Move name to history manager - Done
+    # Setup name getter system - Done
+    # Implement store & Restore into histrory manager and have it call the get name workflow if needed - Done
     # Add json send/receve on lora radio - Package everything into a json?
-
-myname = "Board 1"
+    # Better font
 
 class BOARD_MANAGER:
     def __init__(self):
@@ -30,7 +29,7 @@ class BOARD_MANAGER:
         #NOTE: Make sure to use set draft & send for view updates to work
         self.keyboard = keyboard.Keyboard(
             lambda x: self.addLetterToDraft(x),
-            lambda: self.sendMessage(),
+            lambda: self.onEnter(),
             lambda: self.backspace(),
             lambda: self.display.scrollUp(),
             lambda: self.display.scrollDown()
@@ -51,8 +50,18 @@ class BOARD_MANAGER:
         self.historyManager.addMSG(MSG)
         self.display.update()
 
+    def onEnter(self):
+        #If full
+        if self.historyManager.displayName:
+            #The name was defined, so everything can go as normal
+            self.sendMessage()
+        else:
+            self.historyManager.setDisplayName(self.historyManager.getMSG_Draft())
+            self.historyManager.clearHistory()
+            self.display.update()
+
     def sendMessage(self):
-        msg = myname + ":" + self.historyManager.getMSG_Draft()
+        msg = self.historyManager.displayName + ":" + self.historyManager.getMSG_Draft()
         self.radio.sendMSG(msg)
         self.historyManager.addMSG(msg)
         self.historyManager.setMSG_Draft("")

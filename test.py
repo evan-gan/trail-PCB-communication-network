@@ -41,11 +41,15 @@
 
 
 
-#Datastore test
+# #Datastore test
 # import ujson
 
 # # Define your array
-# array_to_store = [1, 2, 3, 4, 5]
+# array_to_store = {
+#     'displayName': '', #type: ignore
+#     'MSG_Draft': '', # type: ignore
+#     'history': ["Please type your name and press enter"] # type: ignore
+# }
 
 # # Function to write array to flash memory
 # def write_array_to_flash(filename, array):
@@ -76,12 +80,12 @@
 #         return None
 
 # # Example usage
-# filename = "array_data.json"
+# filename = "history_data.json"
 
 # # Write array to flash memory
-# write_array_to_flash(filename, array_to_store)
+# # write_array_to_flash(filename, array_to_store)
 
 # # Read array from flash memory
 # retrieved_array = read_array_from_flash(filename)
 
-# print("Retrieved Array:", retrieved_array)
+# print("Retrieved Array:", retrieved_array, "\nHistory value:", retrieved_array["history"])
