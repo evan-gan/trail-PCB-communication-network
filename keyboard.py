@@ -111,7 +111,8 @@ class Keyboard:
 
     one_time_callbacks = {}
 
-    def __init__(self, onKeyPress, onLeft, onUp, onRight, onDown):
+    def __init__(self, _vcanvas, onKeyPress, onLeft, onUp, onRight, onDown):
+        self._vcanvas = _vcanvas
         self.onKeyPress = onKeyPress
 
         self.onLeft = onLeft
@@ -135,6 +136,45 @@ class Keyboard:
         self.SHIFT_PIN = Pin(28, Pin.IN, Pin.PULL_UP)
 
         self.last_press_time = 0
+
+    def jumpToElement(self, direction):
+        components = self._vcanvas.components  # Assuming we have a reference to vCanvas
+        keys = list(components.keys())
+
+        def find_next_focusable(start_index, step):
+            index = start_index
+
+            for _ in range(len(keys)):
+                index = (index + step) % len(keys)
+                component = components[keys[index]]
+
+                if component.get('focusable', False):
+                    return component
+
+            return None  # No focusable element found
+
+        if not self.focused_element:
+            # If no element is focused, find the first focusable element
+            next_component = find_next_focusable(-1, 1)
+        else:
+            current_key = self.focused_element.key
+            current_index = keys.index(current_key)
+
+            if direction == "Right":
+                next_component = find_next_focusable(current_index, 1)
+            elif direction == "Left":
+                next_component = find_next_focusable(current_index, -1)
+            else:
+                return  # Invalid direction
+
+        if next_component:
+            self.focused_element = next_component
+
+            # Optionally, add visual feedback for the new focused element
+            if hasattr(self.focused_element, 'on_focus'):
+                self.focused_element.on_focus()
+        else:
+            print("No focusable elements found")
 
     def onceKeyPress(self, key, cb):
         self.one_time_callbacks[key] = cb
@@ -176,8 +216,16 @@ class Keyboard:
                         self.focused_element.text = self.focused_element.text[:-1]
                 elif action == "Enter":
                     if hasattr(self.focused_element, "onEnter"):
-                        print("Call onEnter!")
-                        self.focused_element.onEnter(self.focused_element)
+                        self.focused_element.onEnter()
+                    elif hasattr(self.focused_element, "onActivate"):
+                        self.focused_element.onActivate()
+                elif action in ["Left", "Up", "Right", "Down"]:
+                    if action in ["Up", "Down"] and self.focused_element.class_name == "ScrollingFrame":
+                        self.focused_element.scroll(action)
+
+                    if action in ["Left", "Right"]:
+                        self.jumpToElement(action)
+
             else:
                 # TODO: Lol
                 # getattr(self, f"on{action}")()

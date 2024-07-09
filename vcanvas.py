@@ -1,3 +1,5 @@
+# TODO: Implement autolayout and autoexpand (Too complicated for now)
+
 """
 vCanvas.py - Virtual Canvas for UI Rendering
 
@@ -26,6 +28,7 @@ and allowing for responsive UI updates without blocking other operations.
 
 import lib.utils as utils
 import uasyncio
+import CONSTS
 
 
 class vCanvas:
@@ -137,7 +140,8 @@ class UIComponent:
             "class_name": self.__class__.__name__,
             "x": 0, "y": 0, "ax": 0, "ay": 0,
             "visible": True,
-            "position_type": "offset"
+            "position_type": "offset",
+            "focusable": False
         }
 
     def __getattr__(self, name):
@@ -228,6 +232,22 @@ class UIComponent:
 
         data = self.properties.copy()
 
+        if "auto_expand" in data:
+            text_width = len(data["text"]) * \
+                CONSTS.CHAR_WIDTH * data["text_size"]
+            text_height = CONSTS.CHAR_HEIGHT * data["text_size"]
+            padding = data["padding"] * 2  # Account for padding on both sides
+
+            if data["expand_axis"] == "x":
+                data["width"] = text_width + padding
+                data["height"] = text_height + padding
+            else:  # "y"
+                data["width"] = text_width + padding
+                data["height"] = text_height + padding
+
+        data.pop("onActivate", None)
+        data.pop("onEnter", None)
+
         # Format position data
         data["position"] = {
             "x": data.pop("x"),
@@ -279,7 +299,50 @@ class Frame(UIComponent):
             "width": 10,
             "height": 10,
             "fill": False,
-            "border": True
+            "border": True,
+
+            "auto_layout": False,
+            "layout_axis": "y",
+            "layout_spacing": 0,
+        })
+
+        # Apply any frame-specific properties passed in kwargs
+        self.update_properties(kwargs)
+
+
+class ScrollingFrame(UIComponent):
+    def __init__(self, container, **kwargs):
+        """
+        Initialize a ScrollingFrame component.
+
+        :param container: The parent container this frame belongs to.
+        :param kwargs: Additional properties for the frame.
+        """
+
+        super().__init__(container, **kwargs)
+
+        self.properties.update({
+            "size_type": "offset",
+            # Width/height of the outer frame
+            "width": 10,
+            "height": 10,
+            "fill": False,
+            "border": True,
+
+            "auto_layout": False,
+            "layout_axis": "y",
+            "layout_spacing": 0,
+
+            "auto_expand": False,
+            "expand_axis": "y",
+
+            # The width/height inside the ScrollingFrame
+            "in_width": 0,
+            "in_height": 0,
+
+            "scroll_pos": 0,
+
+            "enabled": True,
         })
 
         # Apply any frame-specific properties passed in kwargs
@@ -300,7 +363,8 @@ class TextLabel(UIComponent):
         self.properties.update({
             "text": "",
             "text_size": 1,
-            "text_color": 1
+            "text_color": 1,
+            "text_wrap": True,
         })
 
         # Apply any label-specific properties passed in kwargs
@@ -319,11 +383,18 @@ class TextBox(UIComponent):
         super().__init__(container, **kwargs)
 
         self.properties.update({
+            "focusable": True,
+
+            "width": 100,
+            "height": 30,
+            "border": True,
+
             "text": "",
-            "editable": True,
             "text_size": 1,
             "text_color": 1,
             "text_limit": -1,
+            "editable": True,
+
             "onEnter": None  # Callback function to be called when Enter is pressed
         })
 
@@ -343,16 +414,24 @@ class TextButton(UIComponent):
         super().__init__(container, **kwargs)
 
         self.properties.update({
+            "focusable": True,
+
             "size_type": "offset",
             "width": 10,
             "height": 10,
             "fill": False,
             "border": True,
 
+            "auto_expand": True,
+            "expand_axis": "x",
+            "padding": 0,
+
             "text": "",
             "enabled": True,
             "text_size": 1,
             "text_color": 1,
+
+            "style": "normal",  # normal/underline
             "onActivate": None,  # Callback function to be called when the button is pressed
         })
 

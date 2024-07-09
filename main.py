@@ -49,7 +49,7 @@ async def main():
     _vcanvas = vcanvas.vCanvas(
         display_width, display_height, _display.render)
 
-    _keyboard = keyboard.Keyboard(lambda key: dummyFunc(key),
+    _keyboard = keyboard.Keyboard(_vcanvas, lambda key: dummyFunc(key),
                                   lambda: dummyFunc(""),
                                   lambda: dummyFunc(""),
                                   lambda: dummyFunc(""),

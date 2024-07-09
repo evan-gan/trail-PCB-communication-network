@@ -113,6 +113,7 @@ class Display:
             text = prop["text"]
             text_size = prop["text_size"]
             text_color = prop["text_color"]
+            text_wrap = prop["text_wrap"]
 
             x, y = self.calculate_text_position(
                 text, parent_size, parent_position, position, text_size)
@@ -120,13 +121,16 @@ class Display:
             # Calculate available width for text
             available_width = (CONSTS.DISPLAY_WIDTH - x -
                                CONSTS.CHAR_WIDTH) - (5 * 4)  # Minus 4 characters
-            # Wrap text
-            wrapped_text = self.wrap_text(text, available_width)
-            wrapped_lines_num = len(wrapped_text.split('\n'))
 
-            if y + (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size) > self.display_height:
-                y = self.display_height - \
-                    (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size)
+            # Wrap text
+            if text_wrap:
+                text = self.wrap_text(text, available_width)
+
+                wrapped_lines_num = len(text.split('\n'))
+
+                if y + (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size) > self.display_height:
+                    y = self.display_height - \
+                        (wrapped_lines_num * CONSTS.CHAR_HEIGHT * text_size)
 
             # # Render each line of wrapped text
             # for i, line in enumerate(wrapped_text.split('\n')):
@@ -135,7 +139,55 @@ class Display:
             #                       text_color, size=text_size)
 
             # Render wrapped text with \n
-            self.display.text(wrapped_text, x, y, text_color, size=text_size)
+            self.display.text(text, x, y, text_color, size=text_size)
+
+        elif class_name == "TextButton":
+            size = prop["size"]
+            position = prop["position"]
+            text = prop["text"]
+            text_size = prop["text_size"]
+            text_color = prop["text_color"]
+            fill = prop["fill"]
+            border = prop["border"]
+            padding = prop["padding"]
+            style = prop.get("style", "normal")
+
+            # We'll use this later when you implement activity check
+            is_active = prop.get("is_active", False)
+
+            width, height = self.calculate_size(parent_size, size)
+            pos_x, pos_y = self.calculate_frame_position(
+                parent_size, parent_position, size, position)
+
+            if border:
+                self.display.rect(pos_x, pos_y, width, height, 1, fill=fill)
+
+            # Calculate text position
+            text_width = len(text) * CONSTS.CHAR_WIDTH * text_size
+            text_height = CONSTS.CHAR_HEIGHT * text_size
+
+            text_x = pos_x + (width - text_width) // 2
+            text_y = pos_y + (height - text_height) // 2
+
+            if style == "normal":
+                if is_active:
+                    # Fill the button with white when active
+                    self.display.fill_rect(pos_x + 1, pos_y + 1,
+                                           width - 2, height - 2, 1)
+                    # Draw text in black
+                    self.display.text(text, text_x, text_y, 0, size=text_size)
+                else:
+                    # Draw text in white
+                    self.display.text(text, text_x, text_y, 1, size=text_size)
+            elif style == "underline":
+                # Always draw text in white
+                self.display.text(text, text_x, text_y, 1, size=text_size)
+                if is_active:
+                    # Add underline when active
+                    underline_y = text_y + text_height
+                    self.display.line(text_x, underline_y, text_x +
+                                      text_width, underline_y, 1)
+
         elif class_name == "Frame":
             size = prop["size"]
             position = prop["position"]

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChatHistory">
+    <accountData>
+      <list>
+        <AccountData>
+          <accountId value="VXNlcjo0OTM2NzQ=" />
+          <chats>
+            <list>
+              <chat>
+                <internalId value="0d57ab41-2696-4869-9ef0-508769d67b83" />
+                <llm>
+                  <llm>
+                    <model value="anthropic/claude-3-5-sonnet-20240620" />
+                    <provider value="Anthropic" />
+                    <title value="Claude 3.5 Sonnet" />
+                  </llm>
+                </llm>
+              </chat>
+            </list>
+          </chats>
+          <defaultLlm>
+            <llm>
+              <model value="anthropic/claude-3-5-sonnet-20240620" />
+              <provider value="Anthropic" />
+              <title value="Claude 3.5 Sonnet" />
+            </llm>
+          </defaultLlm>
+        </AccountData>
+      </list>
+    </accountData>
+  </component>
+</project>
