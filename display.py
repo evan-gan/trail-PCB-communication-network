@@ -15,7 +15,8 @@ class Display:
         self.historyManager:HistoryManager = historyManager
         #Display initilisation
         self.i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
-        self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c)
+        self.display = SSD1306_I2C(128, 64, self.i2c, addr=0x3c, page_addressing=False)
+        
 
         self.scroll = 0
 
@@ -53,7 +54,12 @@ class Display:
 #
     def writeToLine(self,line, text):
         LINE_OFFSET = CONSTS.CHAR_HEIGHT + 1
-        self.display.text(text, 0, LINE_OFFSET*line)
+        text_size = 1
+        text_color = 1
+        x = 0
+        y = LINE_OFFSET*line
+        self.display.text(text, x, y, text_color, size=text_size)
+        # self.display.text(text, 0, LINE_OFFSET*line)
 
     def clearDisplay(self):
         self.display.fill(0)
