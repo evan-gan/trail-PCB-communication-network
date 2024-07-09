@@ -39,12 +39,13 @@ class Radio:
             print('Received {}, {}'.format(msg, error))
             if error == "ERR_NONE":
                 # if msg[1] == myname: # this line will only work once changing name is implemented
-                self.receivedMSG(msg)
+                decoded_msg = msg.decode('utf-8')  # Decode the message
+                self.receivedMSG(decoded_msg)
 
         elif events & SX1262.TX_DONE:
             print('done transmitting')
         pass
-    
+
     def sendMSG(self, msg): # frm = from
         # sx.send(bytes(f"{frm}|{to}|{msg}", 'utf-8'))
         self.sx.send(bytes(msg, 'utf-8'))

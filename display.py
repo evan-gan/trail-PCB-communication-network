@@ -58,7 +58,7 @@ class Display:
         text_color = 1
         x = 0
         y = LINE_OFFSET*line
-        self.display.text(text, x, y, text_color, size=text_size)
+        self.display.text(str(text), x, y, text_color, size=text_size)
         # self.display.text(text, 0, LINE_OFFSET*line)
 
     def clearDisplay(self):
