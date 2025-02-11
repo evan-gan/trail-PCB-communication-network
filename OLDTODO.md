@@ -8,11 +8,3 @@ The high-level goal of this project is to receive messages, display them on a sc
     2. Add the message to the `history` array
     3. Call `updateDisplay()` so the display will show the new message
     4. Delete the contents of `MSG_Draft`
-
-# Summery: Who will do what & how:
-* I (@Evan) will implement the `sendDraft()`, and `receivedMSG(MSG)` functions
-* @Cosmin (who is working on the display) will implement the `updateDisplay()` function which will display the contents of the `history` array the fit on the screen & the `MSG_Draft`.
-* @j will implement the `MSG_Draft` variable setter which will call `updateDisplay()` every time it is modified with input from the keyboard.
-* @Alex/@krisk will implement the `sendMSG(MSG)` function which will send the passed in text & when messages are received have them fed into the `receivedMSG(MSG)` function.
-
-Please read all of the above! I spent 45 min writing it & it's important. If you have any questions or feel this structure could be improved for simplicity, message me on slack!
